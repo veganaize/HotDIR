@@ -20,19 +20,23 @@ int main(int argc, char* argv[]) {
 	HANDLE hConsole;
 	HANDLE search_handle;
 	CONSOLE_SCREEN_BUFFER_INFO screen_info_t;
+	PCONSOLE_CURSOR_INFO cursor_info_t;
 	WIN32_FIND_DATA file_data_t;
 	WORD  original_attributes;
 	SHORT console_width;
-	//SHORT line_count = 0;
+	SHORT line_count = 3;
 	DWORD dwAttrib;
 	//??? console_height;
 	char search_string[MAX_PATH];
 	char search_path[MAX_PATH];
 	char search_drive = 'C';
-	char* file_ext = NULL;
-	int sort_flag;
-	int file_counter = 0;
-	int i;
+	char* file_ext = NULL;	// Current file's extension
+	int sort_flag;			// Sort by ...
+	float file_size;			// Current file's size
+	int total_size = 0;		// Total of all listed file sizes
+	int file_counter = 0;	// Total listed file count
+	int console_height = 24;
+	int i;					// General counter
 
 	GetCurrentDirectory(MAX_PATH, search_string);
 	strcpy(search_path, search_string);
@@ -43,7 +47,7 @@ int main(int argc, char* argv[]) {
 
 	original_attributes = screen_info_t.wAttributes;  //Save console info
 	console_width = screen_info_t.srWindow.Right;  //Get console width
-	//console_height = screen_info_t.srWindow.????;  //Get console height
+	console_height = screen_info_t.srWindow.Bottom - screen_info_t.srWindow.Top;  //Get console height
 	
 	/*
 	 * Process command line arguments
@@ -153,7 +157,7 @@ int main(int argc, char* argv[]) {
 	SetConsoleTextAttribute(hConsole, 0x03);	//Aqua (low intensity) path
 	printf("Path: %s\n", search_path);
 
-	for(i = 0; i < console_width; i++) putchar(196);  //Draw -------------
+	for(i = 0; i < console_width; i++) i == console_width / 2 ? putchar(194) : putchar(196);  //Draw ------|-------
 	putchar('\n');
 
 	//Properly display contents of directory (w/o trailing backslash)
@@ -170,7 +174,7 @@ int main(int argc, char* argv[]) {
 		SetConsoleTextAttribute(hConsole, original_attributes);
 		return -1;
 	} else if(ERROR_FILE_NOT_FOUND == (long)search_handle) {
-		puts("\nNormal Error?");
+		puts("\nNo file or folder found.");
 		//Restore console
 		SetConsoleTextAttribute(hConsole, original_attributes);
 		return -1;
@@ -180,15 +184,13 @@ int main(int argc, char* argv[]) {
 		file_counter++;
 		
 		//If current file is a directory
-		if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+		if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 			SetConsoleTextAttribute(hConsole, 0x0D);  // ^ Light Purple ^
-			file_ext = "<dir>";
-		}
 		else {
-			//Get file extension
-			file_ext = strrchr(file_data_t.cFileName, '.');
+			//Get (lower case) file extension
+			file_ext = tolower(strrchr(file_data_t.cFileName, '.'));
 			if(  file_ext != NULL )
-				//Set color for file type
+				//Set color based on file extension
 				if( strcmp(file_ext, ".exe") == 0 || strcmp(file_ext, ".msi") == 0 )
 					SetConsoleTextAttribute(hConsole, 0x0B);  // ^ Light Aqua ^
 				else if(strcmp(file_ext, ".txt") == 0 || strcmp(file_ext, ".doc") == 0 || strcmp(file_ext, ".c") == 0
@@ -225,17 +227,17 @@ int main(int argc, char* argv[]) {
 									|| strcmp(file_ext, ".hlp") == 0 || strcmp(file_ext, ".jsp") == 0 || strcmp(file_ext, ".asp") == 0
 									|| strcmp(file_ext, ".aspx") == 0 || strcmp(file_ext, ".csr") == 0 || strcmp(file_ext, ".rss") == 0
 									|| strcmp(file_ext, ".h") == 0 || strcmp(file_ext, ".a") == 0 || strcmp(file_ext, ".cxx") == 0
-									|| strcmp(file_ext, ".hxx") == 0)
+									|| strcmp(file_ext, ".hxx") == 0 || strcmp(file_ext, ".xps") == 0 || strcmp(file_ext, ".oxps") == 0 )
 					SetConsoleTextAttribute(hConsole, 0x0F);  // ^ Bright White ^
 				else if(strcmp(file_ext, ".bat") == 0 || strcmp(file_ext, ".cmd") == 0 || strcmp(file_ext, ".btm") == 0)
 					SetConsoleTextAttribute(hConsole, 0x0C);  // ^ Light Red ^
-				else if(strcmp(file_ext, ".com") == 0)  // <-- Light Green
+				else if(strcmp(file_ext, ".com") == 0 || strcmp(file_ext, ".msc") == 0 )  // <-- Light Green
 					SetConsoleTextAttribute(hConsole, 0x0A);
 				else if(strcmp(file_ext, ".bas") == 0 || strcmp(file_ext, ".pas") == 0 || strcmp(file_ext, ".js") == 0
 									|| strcmp(file_ext, ".jse") == 0 || strcmp(file_ext, ".vbs") == 0 || strcmp(file_ext, ".vbe") == 0
 									|| strcmp(file_ext, ".wsf") == 0 || strcmp(file_ext, ".php") == 0 || strcmp(file_ext, ".py") == 0
 									|| strcmp(file_ext, ".pl") == 0 || strcmp(file_ext, ".rb") == 0 || strcmp(file_ext, ".xsl") == 0
-									|| strcmp(file_ext, ".tcl") == 0 )
+									|| strcmp(file_ext, ".tcl") == 0 || strcmp(file_ext, ".wsh") == 0)
 					SetConsoleTextAttribute(hConsole, 0x02);  // ^ Green (low intensity) ^
 				else if(strcmp(file_ext, ".mp3") == 0 || strcmp(file_ext, ".mpg") == 0 || strcmp(file_ext, ".mpeg") == 0
 									|| strcmp(file_ext, ".jpg") == 0 || strcmp(file_ext, ".jpeg") == 0 || strcmp(file_ext, ".gif") == 0
@@ -293,19 +295,43 @@ int main(int argc, char* argv[]) {
 			else SetConsoleTextAttribute(hConsole, 0x08);	// Gray (no extension)
 		} // first if/else
 
-		printf("%-27s", file_data_t.cFileName);  //Print file name
+		//TODO:Check if console screen is full
+		if(++line_count == console_height)
+			system("PAUSE");
+		
+		//"DARK RED" for hidden files
+		if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) SetConsoleTextAttribute(hConsole, 0x04);
+
+		printf("%-*s", console_width / 2 - 8, file_data_t.cFileName);  //Print file name
 		//printf("%s\n", file_ext);
-////////////////////////////////////////// TODO
-		//if( DVIDED BY 1024 IS STILL > 1024 THEN ...
-///////////////////////////////////////////////////////////////////		
-		printf( "%3.3d\n", (file_data_t.nFileSizeHigh * ( MAXDWORD+1)) + file_data_t.nFileSizeLow );
-//////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////Print file's size or <dir>//////////////////////	
+		if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) printf("  <dir> ");	
+		else {
+			file_size = (float)((file_data_t.nFileSizeHigh * ( MAXDWORD+1)) + file_data_t.nFileSizeLow);
+			total_size += (int)file_size;
+			SetConsoleTextAttribute(hConsole, 0x08);  // Grey
+			
+			// KB                    MB                             GB                             TB
+			if(file_size > 1023) if((file_size /= 1024.0) > 1023) if((file_size /= 1024.0) > 1023) if((file_size /= 1024.0) > 1023)
+							printf("%5.1f TB", file_size);
+						else printf("%5.1f GB", file_size);
+					else printf("%5.1f MB", file_size);
+				else printf("%5.1f KB", file_size);
+			else printf("%5.1f B ", file_size);
+		}
+
+		SetConsoleTextAttribute(hConsole, 0x03);	//Aqua (low intensity)
+		printf("\263 \n");  // Print |
+		//while(screen_info_t.dwCursorPosition.X < console_width) putchar(' ');
+		//puts("");
+/////////////////////////////////////////////////////////////////////////////
 	} while( FindNextFile(search_handle, &file_data_t) != 0 );
 
 	FindClose(search_handle);
 
 	SetConsoleTextAttribute(hConsole, 0x03);	//Aqua foreground
-	for(i = 0; i < console_width; i++) putchar(196);  //Draw ---------
+	for(i = 0; i < console_width; i++) i == console_width / 2 ? putchar(193) : putchar(196);  //Draw ----|-----
 	putchar('\n');
 
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
@@ -313,7 +339,14 @@ int main(int argc, char* argv[]) {
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(" files totaling ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
-	printf("%d", file_counter);
+	// KB                    MB                             GB                             TB
+	if(total_size > 1023) if((total_size /= 1024.0) > 1023) if((total_size /= 1024.0) > 1023) if((total_size /= 1024.0) > 1023)
+					printf("%5.1f TB", total_size);
+				else printf("%5.1f GB", total_size);
+			else printf("%5.1f MB", total_size);
+		else printf("%5.1f KB", total_size);
+	else printf("%5.1f B ", total_size);
+
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(" bytes consuming ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua

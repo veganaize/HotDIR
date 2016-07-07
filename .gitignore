@@ -1,7 +1,9 @@
 HotDir--Notes.txt
+*.png
+color*
+screen*
 *.obj
 *.exe
-edit_000.png
 *.*~
 dir/*
 *.com
