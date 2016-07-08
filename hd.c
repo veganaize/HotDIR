@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 	char* file_ext = NULL;	// Current file's extension
 	int sort_flag;			// Sort by ...
 	float file_size;			// Current file's size
-	int total_size = 0;		// Total of all listed file sizes
+	float total_size = 0.0;		// Total of all listed file sizes
 	int file_counter = 0;	// Total listed file count
 	int console_height = 24;
 	int i;					// General counter
@@ -308,8 +308,8 @@ int main(int argc, char* argv[]) {
 /////////////////////////////Print file's size or <dir>//////////////////////	
 		if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) printf("  <dir> ");	
 		else {
-			file_size = (float)((file_data_t.nFileSizeHigh * ( MAXDWORD+1)) + file_data_t.nFileSizeLow);
-			total_size += (int)file_size;
+			file_size = (float)( (file_data_t.nFileSizeHigh * (MAXDWORD+1)) + file_data_t.nFileSizeLow );
+			total_size += file_size;
 			SetConsoleTextAttribute(hConsole, 0x08);  // Grey
 			
 			// KB                    MB                             GB                             TB
@@ -339,6 +339,10 @@ int main(int argc, char* argv[]) {
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(" files totaling ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
+	
+	//Reuse file_size (float) variable for total accumulation:
+	//file_size = (float)total_size;
+	
 	// KB                    MB                             GB                             TB
 	if(total_size > 1023) if((total_size /= 1024.0) > 1023) if((total_size /= 1024.0) > 1023) if((total_size /= 1024.0) > 1023)
 					printf("%5.1f TB", total_size);
