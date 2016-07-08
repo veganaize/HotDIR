@@ -349,10 +349,10 @@ int main(int argc, char* argv[]) {
 				else printf("%5.1f GB", total_size);
 			else printf("%5.1f MB", total_size);
 		else printf("%5.1f KB", total_size);
-	else printf("%5.1f B ", total_size);
+	else printf("%5.1f B", total_size);
 
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
-	printf(" bytes consuming ");
+	printf("ytes consuming ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
 	printf("%d", file_counter);
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
@@ -362,7 +362,7 @@ int main(int argc, char* argv[]) {
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(" bytes available on Drive ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
-	printf("C:");
+	printf("%c:", search_drive);
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(" \t\t Volume label: ");
 	SetConsoleTextAttribute(hConsole, 0x0C);  //Light Red
