@@ -17,16 +17,27 @@
 
 int main(int argc, char* argv[]) {
 
-	HANDLE hConsole;
-	HANDLE search_handle;
-	CONSOLE_SCREEN_BUFFER_INFO screen_info_t;
-	PCONSOLE_CURSOR_INFO cursor_info_t;
-	WIN32_FIND_DATA file_data_t;
-	WORD  original_attributes;
-	SHORT console_width;
-	SHORT line_count = 3;
-	DWORD dwAttrib;
-	//??? console_height;
+// Console variables:
+	HANDLE	hConsole;
+	HANDLE	search_handle;
+	CONSOLE_SCREEN_BUFFER_INFO	screen_info_t;
+	PCONSOLE_CURSOR_INFO		cursor_info_t;
+	WIN32_FIND_DATA				file_data_t;
+	WORD	original_attributes;
+	SHORT	console_width;
+	SHORT	line_count = 3;
+	DWORD	dwAttrib;
+	// console_height;
+	
+// GetVolumeInformation() params:
+	//DWORD	serial_number = 0;
+	TCHAR	volume_name[MAX_PATH + 1] = { 0 };
+	//TCHAR	filesystem_name[MAX_PATH + 1] = { 0 };
+	//DWORD	max_component_length = 0;
+    //DWORD	filesystem_flags = 0;
+	char * root_path = "x:\\";
+
+// Other variables:
 	char search_string[MAX_PATH];
 	char search_path[MAX_PATH];
 	char search_drive = 'C';
@@ -365,8 +376,13 @@ int main(int argc, char* argv[]) {
 	printf("%c:", search_drive);
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(" \t\t Volume label: ");
+
+	root_path[0] = search_drive;
+//	GetVolumeInformation(root_path, volume_name, ARRAYSIZE(volume_name), &serial_number, &max_component_length, &filesystem_flags, filesystem_name, ARRAYSIZE(filesystem_name));
+	GetVolumeInformation(root_path, volume_name, ARRAYSIZE(volume_name), NULL, NULL, NULL, NULL, NULL);
+
 	SetConsoleTextAttribute(hConsole, 0x0C);  //Light Red
-	printf("C_DRIVE\n");
+	printf("%s\n", volume_name);
 
 	SetConsoleTextAttribute(hConsole, original_attributes);  //Restore console
 	return 0;
