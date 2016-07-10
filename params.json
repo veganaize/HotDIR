@@ -1,6 +1,6 @@
 {
   "name": "HotDIR",
   "tagline": "Colorized directory listing - Originally by Tony Overfield and Robert Woeger",
-  "body": "### HotDIR\r\nA 32-bit windows command line utility to list files, in a directory, in color.\r\n\r\n### Current Release\r\n[HotDIR  0.5.0](https://github.com/veganaize/HotDIR/releases/tag/0.5)\r\n\r\n### Authors and Contributors\r\n@veganaize\r\n\r\n### Support or Contact\r\nThis program comes with ABSOLUTELY NO WARRANTY.",
+  "body": "### HotDIR\r\nA Windows command line utility to list files, in a directory, in color.\r\n\r\n### Current Release\r\n[HotDIR  0.5.0](https://github.com/veganaize/HotDIR/releases/tag/0.5)\r\n\r\n### Authors and Contributors\r\n@veganaize\r\n\r\n### Support or Contact\r\nThis program comes with ABSOLUTELY NO WARRANTY.",
   "note": "Don't delete this file! It's used internally to help with page regeneration."
 }
