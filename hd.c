@@ -348,7 +348,7 @@ int main(int argc, char* argv[]) {
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
 	printf(" %6d", file_counter);
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
-	printf(" files totaling ");
+	printf(" files, totaling ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
 	
 	//Reuse file_size (float) variable for total accumulation:
@@ -363,13 +363,13 @@ int main(int argc, char* argv[]) {
 	else printf("%5.1f B", total_size);
 
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
-	printf("ytes consuming ");
+	printf(", consuming ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
-	printf("%d", file_counter);
+	printf("%d", NULL);
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	puts(" bytes of disk space.");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
-	printf(" %6d", file_counter);
+	printf(" %6d", NULL);
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(" bytes available on Drive ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
