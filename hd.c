@@ -1,3 +1,10 @@
+/* HD - Public Domain by veganaiZe */
+#define VERSION "0.5.2"
+// * Improved version info & display
+// * Added this little list to top
+// * 
+// * 
+
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>
@@ -69,7 +76,7 @@ int main(int argc, char* argv[]) {
 			switch( (int)*(argv[argc]+1) ) {
 				case 'h' : case 'H' : case '?':  // --> HELP <--
 					SetConsoleTextAttribute(hConsole, 0x0F);  //Bright White
-					puts("\nHD 5.x ");
+					printf("\nHD "); puts(VERSION);
 					SetConsoleTextAttribute(hConsole, 0x03);  //Low Aqua
 					puts("Public domain by veganaiZe");
 					for(i = 0; i < console_width; i++) putchar(196);  //Draw -------------
@@ -307,8 +314,10 @@ int main(int argc, char* argv[]) {
 		} // first if/else
 
 		//TODO:Check if console screen is full
-		if(++line_count == console_height)
+		if(++line_count == console_height) {
+			line_count = 0;
 			system("PAUSE");
+		}
 		
 		//"DARK RED" for hidden files
 		if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) SetConsoleTextAttribute(hConsole, 0x04);
@@ -325,11 +334,11 @@ int main(int argc, char* argv[]) {
 			
 			// KB                    MB                             GB                             TB
 			if(file_size > 1023) if((file_size /= 1024.0) > 1023) if((file_size /= 1024.0) > 1023) if((file_size /= 1024.0) > 1023)
-							printf("%5.1f TB", file_size);
-						else printf("%5.1f GB", file_size);
-					else printf("%5.1f MB", file_size);
-				else printf("%5.1f KB", file_size);
-			else printf("%5.1f B ", file_size);
+							printf("% 5.1f TB", file_size);
+						else printf("% 5.1f GB", file_size);
+					else printf("% 5.1f MB", file_size);
+				else printf("% 5.1f KB", file_size);
+			else printf("% 5d B ", (int)file_size);
 		}
 
 		SetConsoleTextAttribute(hConsole, 0x03);	//Aqua (low intensity)
@@ -360,7 +369,7 @@ int main(int argc, char* argv[]) {
 				else printf("%5.1f GB", total_size);
 			else printf("%5.1f MB", total_size);
 		else printf("%5.1f KB", total_size);
-	else printf("%5.1f B", total_size);
+	else printf("%5d B", (int)total_size);
 
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(", consuming ");
