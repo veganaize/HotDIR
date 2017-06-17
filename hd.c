@@ -1,9 +1,10 @@
 /* HD - Public Domain by veganaiZe */
 #define VERSION "0.5.2"
+//    - = Notable Changes = -
 // * Improved version info & display
 // * Added this little list to top
-// * 
-// * 
+// * Corrected total bytes consumed
+// * Corrected file count (no longer counts sub-folders, ".", or "..")
 
 #include <stdio.h>
 #include <string.h>
@@ -34,6 +35,7 @@ int main(int argc, char* argv[]) {
 	SHORT	console_width;
 	SHORT	line_count = 3;
 	DWORD	dwAttrib;
+	LPDWORD lpFileSizeHigh;		// High-order DWORD of file size from GetCompressedFileSize();
 	// console_height;
 	
 // GetVolumeInformation() params:
@@ -52,6 +54,7 @@ int main(int argc, char* argv[]) {
 	int sort_flag;			// Sort by ...
 	float file_size;			// Current file's size
 	float total_size = 0.0;		// Total of all listed file sizes
+	float total_consumed = 0.0;  // Total actual/compressed disk usage
 	int file_counter = 0;	// Total listed file count
 	int console_height = 24;
 	int i;					// General counter
@@ -199,12 +202,11 @@ int main(int argc, char* argv[]) {
 	}
 
 	do {
-		file_counter++;
-		
 		//If current file is a directory
 		if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 			SetConsoleTextAttribute(hConsole, 0x0D);  // ^ Light Purple ^
 		else {
+			file_counter++;
 			//Get (lower case) file extension
 			file_ext = tolower(strrchr(file_data_t.cFileName, '.'));
 			if(  file_ext != NULL )
@@ -313,10 +315,14 @@ int main(int argc, char* argv[]) {
 			else SetConsoleTextAttribute(hConsole, 0x08);	// Gray (no extension)
 		} // first if/else
 
-		//TODO:Check if console screen is full
+		//Pause if console screen is full
 		if(++line_count == console_height) {
 			line_count = 0;
+			GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
+			dwAttrib = screen_info_t.wAttributes;
+			SetConsoleTextAttribute(hConsole, 0x08);  // Gray
 			system("PAUSE");
+			SetConsoleTextAttribute(hConsole, dwAttrib); // Restore Color
 		}
 		
 		//"DARK RED" for hidden files
@@ -328,7 +334,7 @@ int main(int argc, char* argv[]) {
 /////////////////////////////Print file's size or <dir>//////////////////////	
 		if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) printf("  <dir> ");	
 		else {
-			file_size = (float)( (file_data_t.nFileSizeHigh * (MAXDWORD+1)) + file_data_t.nFileSizeLow );
+			file_size = (float)((file_data_t.nFileSizeHigh * (MAXDWORD+1)) + file_data_t.nFileSizeLow);
 			total_size += file_size;
 			SetConsoleTextAttribute(hConsole, 0x08);  // Grey
 			
@@ -339,6 +345,8 @@ int main(int argc, char* argv[]) {
 					else printf("% 5.1f MB", file_size);
 				else printf("% 5.1f KB", file_size);
 			else printf("% 5d B ", (int)file_size);
+
+			//total_consumed += (float)((*lpFileSizeHigh * (MAXDWORD+1)) + GetCompressedFileSize(file_data_t.cFileName, lpFileSizeHigh));
 		}
 
 		SetConsoleTextAttribute(hConsole, 0x03);	//Aqua (low intensity)
@@ -365,20 +373,20 @@ int main(int argc, char* argv[]) {
 	
 	// KB                    MB                             GB                             TB
 	if(total_size > 1023) if((total_size /= 1024.0) > 1023) if((total_size /= 1024.0) > 1023) if((total_size /= 1024.0) > 1023)
-					printf("%5.1f TB", total_size);
-				else printf("%5.1f GB", total_size);
-			else printf("%5.1f MB", total_size);
-		else printf("%5.1f KB", total_size);
-	else printf("%5d B", (int)total_size);
+					printf("%.1f TB", total_size);
+				else printf("%.1f GB", total_size);
+			else printf("%.1f MB", total_size);
+		else printf("%.1f KB", total_size);
+	else printf("%d B", (int)total_size);
 
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(", consuming ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
-	printf("%d", NULL);
+	printf("%d", total_consumed);
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	puts(" bytes of disk space.");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
-	printf(" %6d", NULL);
+	printf(" %d", NULL);
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(" bytes available on Drive ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua

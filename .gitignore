@@ -33,3 +33,4 @@ dir/
 # Debug files
 *.dSYM/
 *.su
+*.pdb
