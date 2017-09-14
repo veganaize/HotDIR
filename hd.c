@@ -1,10 +1,5 @@
-/* HD - Public Domain by veganaiZe */
-#define VERSION "0.5.2"
-//    - = Notable Changes = -
-// * Improved version info & display
-// * Added this little list to top
-// * Corrected total bytes consumed
-// * Corrected file count (no longer counts sub-folders, ".", or "..")
+/* HD - Released into the public domain by Christopher M. Wheeler */
+#define VERSION "0.6.0"
 
 #include <stdio.h>
 #include <string.h>
@@ -25,7 +20,8 @@
 
 int main(int argc, char* argv[]) {
 
-// Console variables:
+/* Console variables: */
+
 	HANDLE	hConsole;
 	HANDLE	search_handle;
 	CONSOLE_SCREEN_BUFFER_INFO	screen_info_t;
@@ -33,12 +29,14 @@ int main(int argc, char* argv[]) {
 	WIN32_FIND_DATA				file_data_t;
 	WORD	original_attributes;
 	SHORT	console_width;
-	SHORT	line_count = 3;
+	SHORT	line_count = 3;		/* Pre-load with number of lines in header */
 	DWORD	dwAttrib;
-	LPDWORD lpFileSizeHigh;		// High-order DWORD of file size from GetCompressedFileSize();
+	LPDWORD lpFileSizeHigh;		/* High-order DWORD of file size from GetCompressedFileSize(); */
 	// console_height;
 	
-// GetVolumeInformation() params:
+	
+/* Arguments to GetVolumeInformation() API function */
+
 	//DWORD	serial_number = 0;
 	TCHAR	volume_name[MAX_PATH + 1] = { 0 };
 	//TCHAR	filesystem_name[MAX_PATH + 1] = { 0 };
@@ -46,172 +44,249 @@ int main(int argc, char* argv[]) {
     //DWORD	filesystem_flags = 0;
 	char * root_path = "x:\\";
 
-// Other variables:
+
+/* Other variables: */
+
 	char search_string[MAX_PATH];
 	char search_path[MAX_PATH];
-	char search_drive = 'C';
-	char* file_ext = NULL;	// Current file's extension
-	int sort_flag;			// Sort by ...
-	float file_size;			// Current file's size
-	float total_size = 0.0;		// Total of all listed file sizes
-	float total_consumed = 0.0;  // Total actual/compressed disk usage
-	int file_counter = 0;	// Total listed file count
+	char search_drive = 'C';		/* Pre-load with C: drive */
+	char* file_ext = NULL;			/* Current file's extension */
+	int sort_flag;					/* Sort by ... */
+	float file_size;				/* Current file's size */
+	float total_size = 0.0;			/* Total of all listed file sizes */
+	float total_consumed = 0.0;  	/* Total actual/compressed disk usage */
+	int file_counter = 0;			/* Total listed file count */
 	int console_height = 24;
-	int i;					// General counter
+	int i;							/* General counter */
 
 	GetCurrentDirectory(MAX_PATH, search_string);
 	strcpy(search_path, search_string);
 	strcat(search_path, "\\*.*");
 
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	GetConsoleScreenBufferInfo(hConsole, &screen_info_t);  //Get console info
+	GetConsoleScreenBufferInfo(hConsole, &screen_info_t); /* Get console info */
 
-	original_attributes = screen_info_t.wAttributes;  //Save console info
-	console_width = screen_info_t.srWindow.Right;  //Get console width
-	console_height = screen_info_t.srWindow.Bottom - screen_info_t.srWindow.Top;  //Get console height
+	original_attributes = screen_info_t.wAttributes;  	 /* Save console info */
+	console_width = screen_info_t.srWindow.Right;  		 /* Get console width */
+	console_height = screen_info_t.srWindow.Bottom
+						- screen_info_t.srWindow.Top;  /* Get console height */
 	
 	/*
 	 * Process command line arguments
 	 *
 	 */
-	while(argc-- > 1) {
-		if( *(argv[argc]) == '/' ) {
-			switch( (int)*(argv[argc]+1) ) {
-				case 'h' : case 'H' : case '?':  // --> HELP <--
-					SetConsoleTextAttribute(hConsole, 0x0F);  //Bright White
+	while (argc-- > 1) {
+		
+		if (*(argv[argc]) == '/') {
+			
+			switch ((int)*(argv[argc]+1)) {
+				
+				/* CHOICE: Display Help `/h` */
+				case 'h' : case 'H' : case '?':
+					SetConsoleTextAttribute(hConsole, 0x0F);  /* Bright White */
 					printf("\nHD "); puts(VERSION);
-					SetConsoleTextAttribute(hConsole, 0x03);  //Low Aqua
+					
+					SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
 					puts("Public domain by veganaiZe");
-					for(i = 0; i < console_width; i++) putchar(196);  //Draw -------------
+					
+					/* Draw ------------- */
+					for (i = 0; i < console_width; i++) putchar(196);
+					
 					putchar('\n');
-					SetConsoleTextAttribute(hConsole, 0x05);  //Light Purple
+					SetConsoleTextAttribute(hConsole, 0x05);  /* Light Purple */
 					printf("Based on ");
 					SetConsoleTextAttribute(hConsole, 0x06);
 					printf("HotDIR ");
 					SetConsoleTextAttribute(hConsole, 0x05);
 					puts("by Tony Overfield and Robert Woeger");
-					SetConsoleTextAttribute(hConsole, 0x03);  //Low Aqua
+					SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
 					puts("\nUsage:");
-					SetConsoleTextAttribute(hConsole, 0x07);  //Low White
+					SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
 					puts("\tHD [options] [drive:\\][path][search-string]");
-					SetConsoleTextAttribute(hConsole, 0x03);  //Low Aqua
+					SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
 					puts("\nOptions:");
-					SetConsoleTextAttribute(hConsole, 0x07);  //Low White
+					SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
 					printf("\t/C ");
-					SetConsoleTextAttribute(hConsole, 0x03);  //Low Aqua
+					SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
 					puts("- Clear Screen");
-					SetConsoleTextAttribute(hConsole, 0x07);  //Low White
+					SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
 					printf("\t/# ");
-					SetConsoleTextAttribute(hConsole, 0x03);  //Low Aqua
+					SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
 					puts("- Number of Columns (2,4,6) (Default: 1)");
-					SetConsoleTextAttribute(hConsole, 0x07);  //Low White
+					SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
 					printf("\t/L ");
-					SetConsoleTextAttribute(hConsole, 0x03);  //Low Aqua
+					SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
 					puts("- Left to Right Ordering (Default: Top to Bottom)");
-					SetConsoleTextAttribute(hConsole, 0x07);  //Low White
+					SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
 					printf("\t/E ");
-					SetConsoleTextAttribute(hConsole, 0x03);  //Low Aqua
+					SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
 					puts("- Sort by Extension");
-					SetConsoleTextAttribute(hConsole, 0x07);  //Low White
+					SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
 					printf("\t/D ");
-					SetConsoleTextAttribute(hConsole, 0x03);  //Low Aqua
+					SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
 					puts("- Sort by Date");
-					SetConsoleTextAttribute(hConsole, 0x07);  //Low White
+					SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
 					printf("\t/S ");
-					SetConsoleTextAttribute(hConsole, 0x03);  //Low Aqua
+					SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
 					puts("- Sort by Size");
-					//Restore console
+					
+					/* Restore console */
 					SetConsoleTextAttribute(hConsole, original_attributes);
-					//Quit
+					
+					/* Quit */
 					return 0;
-				case 'c' : case 'C' :  // --> CLEAR SCREEN <--
+					
+				/* CHOICE: Clear Screen `/c` */
+				case 'c' : case 'C' :
 					system("cls");
 					break;
-				case 'n' : case 'N' :  // --> SORT NAME <--
+				
+				/* CHOICE: Sort Name `/n` */
+				case 'n' : case 'N' :
 					puts("\nSORT_NAME -- not implemented (default)");
 					break;
-				case 'e' : case 'E' :  // --> SORT EXTENSION <--
+					
+				/* CHOICE: Sort Extension `/e` */
+				case 'e' : case 'E' :
 					puts("\nSORT_EXT -- not implemented");
 					break;
-				case 'd' : case 'D' :  // --> SORT DATE <--
+					
+				/* CHOICE: Sort Date `/d` */
+				case 'd' : case 'D' :
 					puts("\nSORT_DATE -- not implemented");
 					break;
-				case 's' : case 'S' :  // --> SORT SIZE <--
+					
+				/* CHOICE: Sort Size `/s` */
+				case 's' : case 'S' :
 					puts("\nSORT_SIZE -- not implemented");
 					break;
-				case '1' :			// --> ONE COLUMN <--
+					
+				/* CHOICE: One Column `/1` */
+				case '1' :
 					puts("\nONE_COLUMN -- not implemented (default)");
 					break;
-				case '2' :			// -->TWO COLUMN <--
+					
+				/* CHOICE: Two Columns `/2` */
+				case '2' :
 					puts("\nTWO_COLUMN -- not implemented");
 					break;
-				case '4' :			// --> FOUR COLUMN <--
+				
+				/* CHOICE: Four Columns `/4` */
+				case '4' :
 					puts("\nFOUR_COLUMN -- not implemented");
 					break;
+					
+				/* CHOICE: Six Columns `/6` */
 				case '6' :			// --> SIX COLUMN <--
 					puts("\nSIX_COLUMN -- not implemented");
 					break;
-			}  // switch
+			}  /* End of switch */
 		} else {
 
-			if( strchr(argv[argc], ':') != NULL ) { //Look for drive indicator ":"
-				search_drive = toupper( *( strchr(argv[argc], ':') - 1 ) ); //Get letter
-				argv[argc] = argv[argc] + 2; //Drop drive letter
-			} else search_drive = *search_string; //Fallback to current drive letter
+			/* IF: There's a drive indicator `:` */
+			if (strchr(argv[argc], ':') != NULL) {
+				
+			   /* Get current drive letter */
+			   search_drive = toupper(*(strchr(argv[argc], ':')-1));
+			   
+			   /* Drop drive letter */
+			   argv[argc] = argv[argc]+2;
 			
-			strcpy(search_string, search_string + 2); //Drop drive letter
+			} else {
+				
+			   /* ELSE: fallback to current drive letter */
+			   search_drive = *search_string;
+			}
 			
-			if( argv[argc][0] != NULL ) { // Argument contains more than just drive letter?
-				if( argv[argc][0] != '\\' ) sprintf(search_path, "%c:%s\\%s", search_drive, search_string, argv[argc]);
-				else sprintf(search_path, "%c:%s", search_drive, argv[argc]);
-			} else sprintf(search_path, "%c:\\", search_drive);
+			/* Drop drive letter no matter what */
+			strcpy(search_string, search_string + 2);
 			
-			if( search_path[ strlen(search_path) - 1 ] == '\\') strcat(search_path, "*.*");
-		}  // if	
-	}  // while
+			/* ? Argument contains more than just drive letter ? */
+			if ( argv[argc][0] != NULL ) {
+			
+				if ( argv[argc][0] != '\\' )
+					sprintf(search_path, "%c:%s\\%s", search_drive,
+							search_string, argv[argc])
+					;
+				else 
+					sprintf(search_path, "%c:%s", search_drive, argv[argc])
+					;
+			
+			} else {
+				
+				sprintf(search_path, "%c:\\", search_drive);
+				
+			}
+			
+			if (search_path[strlen(search_path)-1] == '\\') 
+				strcat(search_path, "*.*")
+				;
+			
+		}  /* End of if	*/
+		
+	}  /* End of while */
 
 
-
-	SetConsoleTextAttribute(hConsole, 0x0F);	//Bright White label
+	SetConsoleTextAttribute(hConsole, 0x0F);	/* Bright White label */
 	puts("\nHD");
 
-	SetConsoleTextAttribute(hConsole, 0x03);	//Aqua (low intensity) path
+	SetConsoleTextAttribute(hConsole, 0x03);	/* Aqua (low intensity) path */
 	printf("Path: %s\n", search_path);
 
-	for(i = 0; i < console_width; i++) i == console_width / 2 ? putchar(194) : putchar(196);  //Draw ------|-------
+	/* Draw ------|------- */
+	for (i = 0; i < console_width; i++)
+		 i == console_width / 2 ? putchar(194) : putchar(196)
+		 ;
+	
 	putchar('\n');
 
-	//Properly display contents of directory (w/o trailing backslash)
-	dwAttrib = GetFileAttributes( (LPCTSTR) search_path );
-	//Add a trailing backslash and wildcard pattern if needed
-	if( dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY) )
+	/* Properly display contents of directory (w/o trailing backslash) */
+	dwAttrib = GetFileAttributes((LPCTSTR) search_path);
+	
+	/* IF NEEDED: Add a trailing backslash and wildcard pattern */
+	if ( dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY) )
 		strcat(search_path, "\\*.*");
 
-	//Get first file
+	/* Get first file */
 	search_handle = FindFirstFile((LPCTSTR)search_path, &file_data_t);
-	if(INVALID_HANDLE_VALUE == search_handle) {
+	
+	/* IF: The robot breaks */
+	if (INVALID_HANDLE_VALUE == search_handle) {
+		
 		puts("\nNo file or folder found.");
-		//Restore console
+		
+		/* Restore console */
 		SetConsoleTextAttribute(hConsole, original_attributes);
+		
 		return -1;
+		
 	} else if(ERROR_FILE_NOT_FOUND == (long)search_handle) {
+		
 		puts("\nNo file or folder found.");
-		//Restore console
+		
+		/* Restore console */
 		SetConsoleTextAttribute(hConsole, original_attributes);
+
 		return -1;
 	}
 
 	do {
-		//If current file is a directory
-		if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		
+		/* If current file is a directory */
+		if (file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+			
 			SetConsoleTextAttribute(hConsole, 0x0D);  // ^ Light Purple ^
-		else {
+		
+		} else {
+			
 			file_counter++;
-			//Get (lower case) file extension
+			
+			/* Get (lower case) file extension */
 			file_ext = tolower(strrchr(file_data_t.cFileName, '.'));
-			if(  file_ext != NULL )
-				//Set color based on file extension
-				if( strcmp(file_ext, ".exe") == 0 || strcmp(file_ext, ".msi") == 0 )
+			
+			if (  file_ext != NULL )
+				/* Set color based on file extension */
+				if ( strcmp(file_ext, ".exe") == 0 || strcmp(file_ext, ".msi") == 0 )
 					SetConsoleTextAttribute(hConsole, 0x0B);  // ^ Light Aqua ^
 				else if(strcmp(file_ext, ".txt") == 0 || strcmp(file_ext, ".doc") == 0 || strcmp(file_ext, ".c") == 0
 									|| strcmp(file_ext, ".rtf") == 0 || strcmp(file_ext, ".cc") == 0 || strcmp(file_ext, ".asm") == 0
