@@ -5,18 +5,10 @@
 #include <string.h>
 #include <windows.h>
 
-//TODO:
-//	Implement a counter and determine if number of output lines
-//	will surpass console's max display lines.
-
-#define ONE_COLUMN	1
-#define TWO_COLUMN	2
-#define FOUR_COLUMN	4
-#define SIX_COLUMN	8
-#define SORT_NAME	16
-#define SORT_EXT	32
-#define SORT_SIZE	64
-#define SORT_DATE	128
+#define SORT_NAME	1
+#define SORT_EXT	2
+#define SORT_SIZE	4
+#define SORT_DATE	8
 
 int main(int argc, char* argv[]) {
 
@@ -24,16 +16,16 @@ int main(int argc, char* argv[]) {
 
 	HANDLE	hConsole;
 	HANDLE	search_handle;
+	
 	CONSOLE_SCREEN_BUFFER_INFO	screen_info_t;
 	PCONSOLE_CURSOR_INFO		cursor_info_t;
 	WIN32_FIND_DATA				file_data_t;
-	WORD	original_attributes;
+
+    WORD	original_attributes;
 	SHORT	console_width;
 	SHORT	line_count = 3;		/* Pre-load with number of lines in header */
 	DWORD	dwAttrib;
 	LPDWORD lpFileSizeHigh;		/* High-order DWORD of file size from GetCompressedFileSize(); */
-	// console_height;
-	
 	
 /* Arguments to GetVolumeInformation() API function */
 
@@ -43,7 +35,6 @@ int main(int argc, char* argv[]) {
 	//DWORD	max_component_length = 0;
     //DWORD	filesystem_flags = 0;
 	char * root_path = "x:\\";
-
 
 /* Other variables: */
 
@@ -73,12 +64,9 @@ int main(int argc, char* argv[]) {
 	
 	/*
 	 * Process command line arguments
-	 *
 	 */
 	while (argc-- > 1) {
-		
 		if (*(argv[argc]) == '/') {
-			
 			switch ((int)*(argv[argc]+1)) {
 				
 				/* CHOICE: Display Help `/h` */
@@ -160,29 +148,8 @@ int main(int argc, char* argv[]) {
 				case 's' : case 'S' :
 					puts("\nSORT_SIZE -- not implemented");
 					break;
-					
-				/* CHOICE: One Column `/1` */
-				case '1' :
-					puts("\nONE_COLUMN -- not implemented (default)");
-					break;
-					
-				/* CHOICE: Two Columns `/2` */
-				case '2' :
-					puts("\nTWO_COLUMN -- not implemented");
-					break;
-				
-				/* CHOICE: Four Columns `/4` */
-				case '4' :
-					puts("\nFOUR_COLUMN -- not implemented");
-					break;
-					
-				/* CHOICE: Six Columns `/6` */
-				case '6' :			// --> SIX COLUMN <--
-					puts("\nSIX_COLUMN -- not implemented");
-					break;
 			}  /* End of switch */
 		} else {
-
 			/* IF: There's a drive indicator `:` */
 			if (strchr(argv[argc], ':') != NULL) {
 				
@@ -202,7 +169,7 @@ int main(int argc, char* argv[]) {
 			strcpy(search_string, search_string + 2);
 			
 			/* ? Argument contains more than just drive letter ? */
-			if ( argv[argc][0] != NULL ) {
+			if (argv[argc][0]) {
 			
 				if ( argv[argc][0] != '\\' )
 					sprintf(search_path, "%c:%s\\%s", search_drive,
@@ -233,10 +200,12 @@ int main(int argc, char* argv[]) {
 	SetConsoleTextAttribute(hConsole, 0x03);	/* Aqua (low intensity) path */
 	printf("Path: %s\n", search_path);
 
-	/* Draw ------|------- */
 	for (i = 0; i < console_width; i++)
-		 i == console_width / 2 ? putchar(194) : putchar(196)
-		 ;
+        /* Draw ------|------- */
+		// i == console_width / 2 ? putchar(194) : putchar(196)
+		/* Draw ----------------- */
+		putchar(196)
+		;
 	
 	putchar('\n');
 
@@ -281,12 +250,19 @@ int main(int argc, char* argv[]) {
 			
 			file_counter++;
 			
-			/* Get (lower case) file extension */
-			file_ext = tolower(strrchr(file_data_t.cFileName, '.'));
+			/* Get file extension */
+			file_ext = strrchr(file_data_t.cFileName, '.');
 			
-			if (  file_ext != NULL )
+			/* Convert file extension to lowercase */
+			if (file_ext != NULL)
+                for (i = 0; file_ext[i]; i++) 
+		            file_ext[i] = tolower(file_ext[i])
+                ;
+			
+			/* World's longest non-compound IF statement ? */
+			if (file_ext != NULL)
 				/* Set color based on file extension */
-				if ( strcmp(file_ext, ".exe") == 0 || strcmp(file_ext, ".msi") == 0 )
+				if (strcmp(file_ext, ".exe") == 0 || strcmp(file_ext, ".msi") == 0 )
 					SetConsoleTextAttribute(hConsole, 0x0B);  // ^ Light Aqua ^
 				else if(strcmp(file_ext, ".txt") == 0 || strcmp(file_ext, ".doc") == 0 || strcmp(file_ext, ".c") == 0
 									|| strcmp(file_ext, ".rtf") == 0 || strcmp(file_ext, ".cc") == 0 || strcmp(file_ext, ".asm") == 0
@@ -359,11 +335,11 @@ int main(int argc, char* argv[]) {
 									|| strcmp(file_ext, ".hdp") == 0 || strcmp(file_ext, ".flv") == 0 || strcmp(file_ext, ".mid") == 0
 									|| strcmp(file_ext, ".mpa") == 0 || strcmp(file_ext, ".m4a") == 0 || strcmp(file_ext, ".iff") == 0
 									|| strcmp(file_ext, ".3gp") == 0 || strcmp(file_ext, ".3g2") == 0 || strcmp(file_ext, ".m4v") == 0
-									|| strcmp(file_ext, ".rm") == 0 || strcmp(file_ext, ".ram") == 0 || strcmp(file_ext, ".swf") == 0\
+									|| strcmp(file_ext, ".rm") == 0 || strcmp(file_ext, ".ram") == 0 || strcmp(file_ext, ".swf") == 0
 									|| strcmp(file_ext, ".vob") == 0 || strcmp(file_ext, ".pspimge") == 0 || strcmp(file_ext, ".thm") == 0
 									|| strcmp(file_ext, ".yuv") == 0 || strcmp(file_ext, ".divx") == 0 || strcmp(file_ext, ".m4p") == 0
 									|| strcmp(file_ext, ".mts") == 0 || strcmp(file_ext, ".pam") == 0)
-					SetConsoleTextAttribute(hConsole, 0x0E);  // ^ Light Yellow^
+					SetConsoleTextAttribute(hConsole, 0x0E);  // ^ Light Yellow ^
 				else if( strcmp(file_ext, ".7z") == 0 || strcmp(file_ext, ".zip") == 0 || strcmp(file_ext, ".gz") == 0
 									|| strcmp(file_ext, ".tar") == 0 || strcmp(file_ext, ".bz2") == 0 || strcmp(file_ext, ".rar") == 0
 									|| strcmp(file_ext, ".arc") == 0 || strcmp(file_ext, ".devpak") == 0 || strcmp(file_ext, ".xz") == 0
@@ -388,9 +364,9 @@ int main(int argc, char* argv[]) {
 					SetConsoleTextAttribute(hConsole, 0x06);  // ^ Yellow (low intensity) ^
 				else SetConsoleTextAttribute(hConsole, 0x08);	// Gray (everything else)
 			else SetConsoleTextAttribute(hConsole, 0x08);	// Gray (no extension)
-		} // first if/else
+		} /* First if/else */
 
-		//Pause if console screen is full
+		/* Pause if console screen is full */
 		if(++line_count == console_height) {
 			line_count = 0;
 			GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
@@ -400,20 +376,21 @@ int main(int argc, char* argv[]) {
 			SetConsoleTextAttribute(hConsole, dwAttrib); // Restore Color
 		}
 		
-		//"DARK RED" for hidden files
+		/* "DARK RED" for hidden files */
 		if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) SetConsoleTextAttribute(hConsole, 0x04);
 
-		printf("%-*s", console_width / 2 - 8, file_data_t.cFileName);  //Print file name
+        /* Print file name */
+		printf("%-*s", console_width / 2 - 8, file_data_t.cFileName);
 		//printf("%s\n", file_ext);
 
-/////////////////////////////Print file's size or <dir>//////////////////////	
+        /* Print file's size or <dir> */
 		if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) printf("  <dir> ");	
 		else {
 			file_size = (float)((file_data_t.nFileSizeHigh * (MAXDWORD+1)) + file_data_t.nFileSizeLow);
 			total_size += file_size;
 			SetConsoleTextAttribute(hConsole, 0x08);  // Grey
 			
-			// KB                    MB                             GB                             TB
+			/* KB                    MB                             GB                             TB */
 			if(file_size > 1023) if((file_size /= 1024.0) > 1023) if((file_size /= 1024.0) > 1023) if((file_size /= 1024.0) > 1023)
 							printf("% 5.1f TB", file_size);
 						else printf("% 5.1f GB", file_size);
@@ -457,11 +434,11 @@ int main(int argc, char* argv[]) {
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(", consuming ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
-	printf("%d", total_consumed);
+	printf("%d", (int)total_consumed);
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	puts(" bytes of disk space.");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
-	printf(" %d", NULL);
+	printf(" %d", 0);
 	SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
 	printf(" bytes available on Drive ");
 	SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
@@ -471,7 +448,7 @@ int main(int argc, char* argv[]) {
 
 	root_path[0] = search_drive;
 //	GetVolumeInformation(root_path, volume_name, ARRAYSIZE(volume_name), &serial_number, &max_component_length, &filesystem_flags, filesystem_name, ARRAYSIZE(filesystem_name));
-	GetVolumeInformation(root_path, volume_name, ARRAYSIZE(volume_name), NULL, NULL, NULL, NULL, NULL);
+	GetVolumeInformation(root_path, volume_name, ARRAYSIZE(volume_name), NULL, NULL, NULL, NULL, 0);
 
 	SetConsoleTextAttribute(hConsole, 0x0C);  //Light Red
 	printf("%s\n", volume_name);
