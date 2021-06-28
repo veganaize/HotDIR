@@ -1,5 +1,8 @@
-/* HD - Released into the public domain by Christopher M. Wheeler */
-#define VERSION "0.6.0"
+/* HotDIR (clone) - Public Domain by veganaiZe
+ * NO WARANTY WHATSOEVER!
+ */
+
+#define VERSION "0.6.2"
 
 #include <stdio.h>
 #include <string.h>
@@ -16,7 +19,7 @@ int main(int argc, char* argv[]) {
 
     HANDLE  hConsole;
     HANDLE  search_handle;
-    
+
     CONSOLE_SCREEN_BUFFER_INFO  screen_info_t;
     PCONSOLE_CURSOR_INFO        cursor_info_t;
     WIN32_FIND_DATA             file_data_t;
@@ -26,7 +29,7 @@ int main(int argc, char* argv[]) {
     SHORT   line_count = 3;     /* Pre-load with number of lines in header */
     DWORD   dwAttrib;
     LPDWORD lpFileSizeHigh;     /* High-order DWORD of file size from GetCompressedFileSize(); */
-    
+
 /* Arguments to GetVolumeInformation() API function */
 
     //DWORD serial_number = 0;
@@ -61,25 +64,25 @@ int main(int argc, char* argv[]) {
     console_width = screen_info_t.srWindow.Right;        /* Get console width */
     console_height = screen_info_t.srWindow.Bottom
                         - screen_info_t.srWindow.Top;  /* Get console height */
-    
+
     /*
      * Process command line arguments
      */
     while (argc-- > 1) {
         if (*(argv[argc]) == '/') {
             switch ((int)*(argv[argc]+1)) {
-                
+
                 /* CHOICE: Display Help `/h` */
                 case 'h' : case 'H' : case '?':
                     SetConsoleTextAttribute(hConsole, 0x0F);  /* Bright White */
                     printf("\nHD "); puts(VERSION);
-                    
+
                     SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
                     puts("Public domain by veganaiZe");
-                    
+
                     /* Draw ------------- */
                     for (i = 0; i < console_width; i++) putchar(196);
-                    
+
                     putchar('\n');
                     SetConsoleTextAttribute(hConsole, 0x05);  /* Light Purple */
                     printf("Based on ");
@@ -117,33 +120,33 @@ int main(int argc, char* argv[]) {
                     printf("\t/S ");
                     SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
                     puts("- Sort by Size");
-                    
+
                     /* Restore console */
                     SetConsoleTextAttribute(hConsole, original_attributes);
-                    
+
                     /* Quit */
                     return 0;
-                    
+
                 /* CHOICE: Clear Screen `/c` */
                 case 'c' : case 'C' :
                     system("cls");
                     break;
-                
+
                 /* CHOICE: Sort Name `/n` */
                 case 'n' : case 'N' :
                     puts("\nSORT_NAME -- not implemented (default)");
                     break;
-                    
+
                 /* CHOICE: Sort Extension `/e` */
                 case 'e' : case 'E' :
                     puts("\nSORT_EXT -- not implemented");
                     break;
-                    
+
                 /* CHOICE: Sort Date `/d` */
                 case 'd' : case 'D' :
                     puts("\nSORT_DATE -- not implemented");
                     break;
-                    
+
                 /* CHOICE: Sort Size `/s` */
                 case 's' : case 'S' :
                     puts("\nSORT_SIZE -- not implemented");
@@ -152,45 +155,45 @@ int main(int argc, char* argv[]) {
         } else {
             /* IF: There's a drive indicator `:` */
             if (strchr(argv[argc], ':') != NULL) {
-                
+
                /* Get current drive letter */
                search_drive = toupper(*(strchr(argv[argc], ':')-1));
-               
+
                /* Drop drive letter */
                argv[argc] = argv[argc]+2;
-            
+
             } else {
-                
+
                /* ELSE: fallback to current drive letter */
                search_drive = *search_string;
             }
-            
+
             /* Drop drive letter no matter what */
             strcpy(search_string, search_string + 2);
-            
+
             /* ? Argument contains more than just drive letter ? */
             if (argv[argc][0]) {
-            
+
                 if ( argv[argc][0] != '\\' )
                     sprintf(search_path, "%c:%s\\%s", search_drive,
                             search_string, argv[argc])
                     ;
-                else 
+                else
                     sprintf(search_path, "%c:%s", search_drive, argv[argc])
                     ;
-            
+
             } else {
-                
+
                 sprintf(search_path, "%c:\\", search_drive);
-                
+
             }
-            
-            if (search_path[strlen(search_path)-1] == '\\') 
+
+            if (search_path[strlen(search_path)-1] == '\\')
                 strcat(search_path, "*.*")
                 ;
-            
+
         }  /* End of if */
-        
+
     }  /* End of while */
 
 
@@ -206,33 +209,33 @@ int main(int argc, char* argv[]) {
         /* Draw ----------------- */
         putchar(196)
         ;
-    
+
     putchar('\n');
 
     /* Properly display contents of directory (w/o trailing backslash) */
     dwAttrib = GetFileAttributes((LPCTSTR) search_path);
-    
+
     /* IF NEEDED: Add a trailing backslash and wildcard pattern */
     if ( dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY) )
         strcat(search_path, "\\*.*");
 
     /* Get first file */
     search_handle = FindFirstFile((LPCTSTR)search_path, &file_data_t);
-    
+
     /* IF: The robot breaks */
     if (INVALID_HANDLE_VALUE == search_handle) {
-        
+
         puts("\nNo file or folder found.");
-        
+
         /* Restore console */
         SetConsoleTextAttribute(hConsole, original_attributes);
-        
+
         return -1;
-        
+
     } else if(ERROR_FILE_NOT_FOUND == (long)search_handle) {
-        
+
         puts("\nNo file or folder found.");
-        
+
         /* Restore console */
         SetConsoleTextAttribute(hConsole, original_attributes);
 
@@ -240,25 +243,25 @@ int main(int argc, char* argv[]) {
     }
 
     do {
-        
+
         /* If current file is a directory */
         if (file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-            
+
             SetConsoleTextAttribute(hConsole, 0x0D);  // ^ Light Purple ^
-        
+
         } else {
-            
+
             file_counter++;
-            
+
             /* Get file extension */
             file_ext = strrchr(file_data_t.cFileName, '.');
-            
+
             /* Convert file extension to lowercase */
             if (file_ext != NULL)
-                for (i = 0; file_ext[i]; i++) 
+                for (i = 0; file_ext[i]; i++)
                     file_ext[i] = tolower(file_ext[i])
                 ;
-            
+
             /* World's longest non-compound IF statement ? */
             if (file_ext != NULL)
                 /* Set color based on file extension */
@@ -375,7 +378,7 @@ int main(int argc, char* argv[]) {
             system("PAUSE");
             SetConsoleTextAttribute(hConsole, dwAttrib); // Restore Color
         }
-        
+
         /* "DARK RED" for hidden files */
         if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) SetConsoleTextAttribute(hConsole, 0x04);
 
@@ -384,12 +387,12 @@ int main(int argc, char* argv[]) {
         //printf("%s\n", file_ext);
 
         /* Print file's size or <dir> */
-        if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) printf("  <dir> "); 
+        if(file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) printf("  <dir> ");
         else {
             file_size = (float)((file_data_t.nFileSizeHigh * (MAXDWORD+1)) + file_data_t.nFileSizeLow);
             total_size += file_size;
             SetConsoleTextAttribute(hConsole, 0x08);  // Grey
-            
+
             /* KB                    MB                             GB                             TB */
             if(file_size > 1023) if((file_size /= 1024.0) > 1023) if((file_size /= 1024.0) > 1023) if((file_size /= 1024.0) > 1023)
                             printf("% 5.1f TB", file_size);
@@ -419,10 +422,10 @@ int main(int argc, char* argv[]) {
     SetConsoleTextAttribute(hConsole, 0x0A);  //Light Green
     printf(" files, totaling ");
     SetConsoleTextAttribute(hConsole, 0x0B);  //Light Aqua
-    
+
     //Reuse file_size (float) variable for total accumulation:
     //file_size = (float)total_size;
-    
+
     // KB                    MB                             GB                             TB
     if(total_size > 1023) if((total_size /= 1024.0) > 1023) if((total_size /= 1024.0) > 1023) if((total_size /= 1024.0) > 1023)
                     printf("%.1f TB", total_size);
