@@ -28,14 +28,12 @@ int main(int argc, char* argv[]) {
     HANDLE  search_handle;
 
     CONSOLE_SCREEN_BUFFER_INFO  screen_info_t;
-    PCONSOLE_CURSOR_INFO        cursor_info_t;
     WIN32_FIND_DATA             file_data_t;
 
     WORD    original_attributes;
     SHORT   console_width;
     SHORT   line_count = 3;     /* Pre-load with number of lines in header */
     DWORD   dwAttrib;
-    LPDWORD lpFileSizeHigh;     /* High-order DWORD of file size from GetCompressedFileSize(); */
 
 /* Arguments to GetVolumeInformation() API function */
 
@@ -48,7 +46,6 @@ int main(int argc, char* argv[]) {
     char search_path[MAX_PATH];
     char search_drive = 'C';        /* Pre-load with C: drive */
     char* file_ext = NULL;          /* Current file's extension */
-    int sort_flag;                  /* Sort by ... */
     float file_size;                /* Current file's size */
     float total_size = 0.0;         /* Total of all listed file sizes */
     float total_consumed = 0.0;     /* Total actual/compressed disk usage */
