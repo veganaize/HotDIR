@@ -1,5 +1,9 @@
 /* HotDIR (clone) - Public Domain by veganaiZe
- * NO WARANTY WHATSOEVER!
+ *
+ * Colorful file/folder listing at the command prompt.
+ *
+ * NO WARRANTY WHATSOEVER!
+ *
  */
 
 #define VERSION "0.6.2"
