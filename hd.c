@@ -5,12 +5,19 @@
  * NO WARRANTY WHATSOEVER!
  *
  */
-
-#define VERSION "0.6.2"
-
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>
+
+#define VERSION "0.6.2"
+
+#define AQUA()         SetConsoleTextAttribute(hConsole, 0x03)
+#define PURPLE()       SetConsoleTextAttribute(hConsole, 0x05)
+#define YELLOW()       SetConsoleTextAttribute(hConsole, 0x06)
+#define WHITE()        SetConsoleTextAttribute(hConsole, 0x07)
+#define LIGHT_GREEN()  SetConsoleTextAttribute(hConsole, 0x0A)
+#define LIGHT_AQUA()   SetConsoleTextAttribute(hConsole, 0x0B)
+#define BRIGHT_WHITE() SetConsoleTextAttribute(hConsole, 0x0F)
 
 
 int main(int argc, char* argv[]) {
@@ -79,43 +86,24 @@ int main(int argc, char* argv[]) {
                     /* Draw ------------- */
                     for (i = 0; i < console_width; i++) putchar(196);
 
-                    putchar('\n');
-                    SetConsoleTextAttribute(hConsole, 0x05);  /* Light Purple */
-                    printf("Based on ");
-                    SetConsoleTextAttribute(hConsole, 0x06);
-                    printf("HotDIR ");
-                    SetConsoleTextAttribute(hConsole, 0x05);
-                    puts("by Tony Overfield and Robert Woeger");
-                    SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
-                    puts("\nUsage:");
-                    SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
-                    puts("\tHD [options] [drive:\\][path][search-string]");
-                    SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
-                    puts("\nOptions:");
-                    SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
-                    printf("\t/C ");
-                    SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
-                    puts("- Clear Screen");
-                    SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
-                    printf("\t/# ");
-                    SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
-                    puts("- Number of Columns (2,4,6) (Default: 1)");
-                    SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
-                    printf("\t/L ");
-                    SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
-                    puts("- Left to Right Ordering (Default: Top to Bottom)");
-                    SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
-                    printf("\t/E ");
-                    SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
-                    puts("- Sort by Extension");
-                    SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
-                    printf("\t/D ");
-                    SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
-                    puts("- Sort by Date");
-                    SetConsoleTextAttribute(hConsole, 0x07);  /* Low White */
-                    printf("\t/S ");
-                    SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
-                    puts("- Sort by Size");
+                    PURPLE(); printf("\nBased on ");
+                    YELLOW(); printf("HotDIR ");
+                    PURPLE(); puts("by Tony Overfield and Robert Woeger");
+                    AQUA();   puts("\nUsage:");
+                    WHITE();  puts("\tHD [options] [drive:\\][path][search-string]");
+                    AQUA();   puts("\nOptions:");
+                    WHITE();  printf("\t/C ");
+                    AQUA();   puts("- Clear Screen");
+                    WHITE();  printf("\t/# ");
+                    AQUA();   puts("- Number of Columns (2,4,6) (Default: 1)");
+                    WHITE();  printf("\t/L ");
+                    AQUA();   puts("- Left to Right Ordering (Default: Top to Bottom)");
+                    WHITE();  printf("\t/E ");
+                    AQUA();   puts("- Sort by Extension");
+                    WHITE();  printf("\t/D ");
+                    AQUA();   puts("- Sort by Date");
+                    WHITE();  printf("\t/S ");
+                    AQUA();   puts("- Sort by Size");
 
                     /* Restore console */
                     SetConsoleTextAttribute(hConsole, original_attributes);
