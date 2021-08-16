@@ -9,7 +9,7 @@
 #include <string.h>
 #include <windows.h>
 
-#define VERSION "0.6.2"
+#define VERSION_STRING "0.6.2"
 
 #define AQUA()         SetConsoleTextAttribute(hConsole, 0x03)
 #define PURPLE()       SetConsoleTextAttribute(hConsole, 0x05)
@@ -77,16 +77,14 @@ int main(int argc, char* argv[]) {
 
                 /* CHOICE: Display Help `/h` */
                 case 'h' : case 'H' : case '?':
-                    SetConsoleTextAttribute(hConsole, 0x0F);  /* Bright White */
-                    printf("\nHD "); puts(VERSION);
+                    BRIGHT_WHITE(); puts("\nHD " VERSION_STRING);
 
-                    SetConsoleTextAttribute(hConsole, 0x03);  /* Low Aqua */
-                    puts("Public domain by veganaiZe");
+                    AQUA(); puts("Public domain by veganaiZe");
 
                     /* Draw ------------- */
                     for (i = 0; i < console_width; i++) putchar(196);
 
-                    PURPLE(); printf("\nBased on ");
+                    PURPLE(); printf("\nClone of ");
                     YELLOW(); printf("HotDIR ");
                     PURPLE(); puts("by Tony Overfield and Robert Woeger");
                     AQUA();   puts("\nUsage:");
