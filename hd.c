@@ -9,7 +9,7 @@
 #include <string.h>
 #include <windows.h>
 
-#define VERSION_STRING "0.6.2"
+#define VERSION_STRING "0.6.3"
 
 #define GREEN()        SetConsoleTextAttribute(hConsole, 0x02)
 #define AQUA()         SetConsoleTextAttribute(hConsole, 0x03)
