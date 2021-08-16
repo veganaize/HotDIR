@@ -12,10 +12,6 @@
 #include <string.h>
 #include <windows.h>
 
-#define SORT_NAME   1
-#define SORT_EXT    2
-#define SORT_SIZE   4
-#define SORT_DATE   8
 
 int main(int argc, char* argv[]) {
 
@@ -36,11 +32,7 @@ int main(int argc, char* argv[]) {
 
 /* Arguments to GetVolumeInformation() API function */
 
-    //DWORD serial_number = 0;
     TCHAR   volume_name[MAX_PATH + 1] = { 0 };
-    //TCHAR filesystem_name[MAX_PATH + 1] = { 0 };
-    //DWORD max_component_length = 0;
-    //DWORD filesystem_flags = 0;
     char * root_path = "x:\\";
 
 /* Other variables: */
