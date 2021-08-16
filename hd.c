@@ -21,6 +21,7 @@
 #define LIGHT_GREEN()  SetConsoleTextAttribute(hConsole, 0x0A)
 #define LIGHT_AQUA()   SetConsoleTextAttribute(hConsole, 0x0B)
 #define LIGHT_RED()    SetConsoleTextAttribute(hConsole, 0x0C)
+#define LIGHT_PURPLE() SetConsoleTextAttribute(hConsole, 0x0D)
 #define LIGHT_YELLOW() SetConsoleTextAttribute(hConsole, 0x0E)
 #define BRIGHT_WHITE() SetConsoleTextAttribute(hConsole, 0x0F)
 
