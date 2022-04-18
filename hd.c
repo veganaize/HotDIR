@@ -26,51 +26,49 @@
 #define BRIGHT_WHITE() SetConsoleTextAttribute(hConsole, 0x0F)
 
 
-int main(int argc, char* argv[]) {
+HANDLE hConsole;
+SHORT  console_width;
+WORD   original_attributes;
+char   search_drive   = 'C';     /* Pre-load with C: drive */
+char   search_string[MAX_PATH];
+char   search_path[MAX_PATH];
 
-/* Console variables: */
 
-    HANDLE hConsole;
-    HANDLE search_handle;
+int display_help()
+{
+    int i;
 
-    CONSOLE_SCREEN_BUFFER_INFO screen_info_t;
-    WIN32_FIND_DATA file_data_t;
+    BRIGHT_WHITE(); puts("\nHD " VERSION_STRING);
+    AQUA(); puts("Public domain by veganaiZe");
 
-    WORD   original_attributes;
-    SHORT  console_width;
-    SHORT  line_count = 3;  /* Pre-loaded with number of lines in header */
-    DWORD  dwAttrib;
+    /* Draw ------------- */
+    for (i = 0; i < console_width; i++) putchar(196);
 
-    /* Args to GetVolumeInformation() */
-    TCHAR volume_name[MAX_PATH + 1] = { 0 };
-    char  *root_path = "x:\\";
+    PURPLE(); printf("\nClone of ");
+    YELLOW(); printf("HotDIR ");
+    PURPLE(); puts("by Tony Overfield and Robert Woeger");
+    AQUA();   puts("\nUsage:");
+    WHITE();  puts("\tHD [options] [drive:\\][path][search-string]");
+    AQUA();   puts("\nOptions:");
+    WHITE();  printf("\t/C ");
+    AQUA();   puts("- Clear Screen");
+    WHITE();  printf("\t/# ");
+    AQUA();   puts("- Number of Columns (2,4,6) (Default: 1)");
+    WHITE();  printf("\t/L ");
+    AQUA();   puts("- Left to Right Ordering (Default: Top to Bottom)");
+    WHITE();  printf("\t/E ");
+    AQUA();   puts("- Sort by Extension");
+    WHITE();  printf("\t/D ");
+    AQUA();   puts("- Sort by Date");
+    WHITE();  printf("\t/S ");
+    AQUA();   puts("- Sort by Size");
 
-/* Other variables: */
+    return 0;
+}
 
-    char  search_string[MAX_PATH];
-    char  search_path[MAX_PATH];
-    char  search_drive   = 'C';     /* Pre-load with C: drive */
-    char  *file_ext      = NULL;    /* Current file's extension */
-    float file_size      = -1.0;    /* Current file's size */
-    float total_size     = 0.0;     /* Total of all listed file sizes */
-    float total_consumed = 0.0;     /* Total actual/compressed disk usage */
-    int   file_counter   = 0;       /* Total listed file count */
-    int   console_height = 24;
-    int   i;                        /* General counter */
 
-    GetCurrentDirectory(MAX_PATH, search_string);
-    strcpy(search_path, search_string);
-    strcat(search_path, "\\*.*");
-
-    /** Get console info */
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
-
-    original_attributes = screen_info_t.wAttributes; /* Save console info */
-    console_width = screen_info_t.srWindow.Right;    /* Get console width */
-    console_height = screen_info_t.srWindow.Bottom
-                     - screen_info_t.srWindow.Top;  /* Get console height */
-
+int process_cmdline_args(int argc, char *argv[])
+{
     /** Process command line arguments */
     while (argc-- > 1) {
         if (*(argv[argc]) == '/') {
@@ -78,32 +76,7 @@ int main(int argc, char* argv[]) {
 
                 /* CHOICE: Display Help `/h` */
                 case 'h' : case 'H' : case '?':
-                    BRIGHT_WHITE(); puts("\nHD " VERSION_STRING);
-
-                    AQUA(); puts("Public domain by veganaiZe");
-
-                    /* Draw ------------- */
-                    for (i = 0; i < console_width; i++) putchar(196);
-
-                    PURPLE(); printf("\nClone of ");
-                    YELLOW(); printf("HotDIR ");
-                    PURPLE(); puts("by Tony Overfield and Robert Woeger");
-                    AQUA();   puts("\nUsage:");
-                    WHITE();  puts("\tHD [options] [drive:\\][path][search-string]");
-                    AQUA();   puts("\nOptions:");
-                    WHITE();  printf("\t/C ");
-                    AQUA();   puts("- Clear Screen");
-                    WHITE();  printf("\t/# ");
-                    AQUA();   puts("- Number of Columns (2,4,6) (Default: 1)");
-                    WHITE();  printf("\t/L ");
-                    AQUA();   puts("- Left to Right Ordering (Default: Top to Bottom)");
-                    WHITE();  printf("\t/E ");
-                    AQUA();   puts("- Sort by Extension");
-                    WHITE();  printf("\t/D ");
-                    AQUA();   puts("- Sort by Date");
-                    WHITE();  printf("\t/S ");
-                    AQUA();   puts("- Sort by Size");
-
+                    display_help();
                     /* Restore console */
                     SetConsoleTextAttribute(hConsole, original_attributes);
                     /* Quit */
@@ -178,6 +151,51 @@ int main(int argc, char* argv[]) {
 
     }  /* End while */
 
+    return 0;
+}
+
+
+int main(int argc, char* argv[])
+{
+
+/* Console variables: */
+
+    HANDLE search_handle;
+
+    CONSOLE_SCREEN_BUFFER_INFO screen_info_t;
+    WIN32_FIND_DATA file_data_t;
+
+    SHORT  line_count = 3;  /* Pre-loaded with number of lines in header */
+    DWORD  dwAttrib;
+
+    /* Args to GetVolumeInformation() */
+    TCHAR volume_name[MAX_PATH + 1] = { 0 };
+    char  *root_path = "x:\\";
+
+/* Other variables: */
+
+    char  *file_ext      = NULL;    /* Current file's extension */
+    float file_size      = -1.0;    /* Current file's size */
+    float total_size     = 0.0;     /* Total of all listed file sizes */
+    float total_consumed = 0.0;     /* Total actual/compressed disk usage */
+    int   file_counter   = 0;       /* Total listed file count */
+    int   console_height = 24;
+    int   i;                        /* General counter */
+
+    GetCurrentDirectory(MAX_PATH, search_string);
+    strcpy(search_path, search_string);
+    strcat(search_path, "\\*.*");
+
+    /** Get console info */
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
+
+    original_attributes = screen_info_t.wAttributes; /* Save console info */
+    console_width = screen_info_t.srWindow.Right;    /* Get console width */
+    console_height = screen_info_t.srWindow.Bottom
+                     - screen_info_t.srWindow.Top;  /* Get console height */
+
+    process_cmdline_args(argc, argv);
 
     BRIGHT_WHITE(); puts("\nHD");
     AQUA(); printf("Path: %s\n", search_path);
@@ -338,7 +356,7 @@ int main(int argc, char* argv[]) {
                             || strcmp(file_ext, ".cue") == 0 || strcmp(file_ext, ".bin") == 0 || strcmp(file_ext, ".apk") == 0)
                     YELLOW();
                 else GRAY();  // (everything else)
-            else GRAY();  // (no extension)
+            } else GRAY();  // (no extension)
         } /* First if/else */
 
         /* Pause if console screen is full */
