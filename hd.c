@@ -44,6 +44,20 @@ SHORT  line_count = 3;  /* Preload w/ num lines in header */
 DWORD  dwAttrib;
 
 
+int fixup_path()
+{
+    /* Contents of directory (w/o trailing backslash) */
+    dwAttrib = GetFileAttributes((LPCTSTR) search_path);
+
+    /* Valid directory ? */
+    if (dwAttrib != INVALID_FILE_ATTRIBUTES
+            && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
+        /* Append backslash & wildcard pattern */
+        strcat(search_path, "\\*.*");
+    }
+}
+
+
 int display_header()
 {
     int i;
@@ -225,16 +239,8 @@ int main(int argc, char* argv[])
     get_console_info();
     process_cmdline_args(argc, argv);
     display_header();
+    fixup_path();
 
-    /* Contents of directory (w/o trailing backslash) */
-    dwAttrib = GetFileAttributes((LPCTSTR) search_path);
-
-    /* Valid directory ? */
-    if (dwAttrib != INVALID_FILE_ATTRIBUTES
-            && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
-        /* Append backslash & wildcard pattern */
-        strcat(search_path, "\\*.*");
-    }
 
     /** Attempt to retrieve first file */
     if ((search_handle = FindFirstFile((LPCTSTR)search_path, &file_data_t))
