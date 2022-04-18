@@ -9,7 +9,7 @@
 #include <string.h>
 #include <windows.h>
 
-#define VERSION_STRING "0.6.3"
+#define VERSION_STRING "0.6.3"  /* <-- Increment just before release. */
 
 #define GREEN()        SetConsoleTextAttribute(hConsole, 0x02)
 #define AQUA()         SetConsoleTextAttribute(hConsole, 0x03)
@@ -49,6 +49,14 @@ float file_size      = -1.0;    /* Current file's size */
 float total_size     = 0.0;     /* Total of all listed file sizes */
 float total_consumed = 0.0;     /* Total actual/compressed disk usage */
 int   file_counter   = 0;       /* Total listed file count */
+
+
+int build_initial_search_string()
+{
+    GetCurrentDirectory(MAX_PATH, search_string);
+    strcpy(search_path, search_string);
+    strcat(search_path, "\\*.*");
+}
 
 
 int process_files()
@@ -422,11 +430,7 @@ int main(int argc, char* argv[])
 /* Other variables: */
     int   i;                        /* General counter */
 
-    /* Build up initial search string (?) */
-    GetCurrentDirectory(MAX_PATH, search_string);
-    strcpy(search_path, search_string);
-    strcat(search_path, "\\*.*");
-
+    build_initial_search_string();
     get_console_info();
     process_cmdline_args(argc, argv);
     display_header();
