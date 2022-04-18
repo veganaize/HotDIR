@@ -44,7 +44,30 @@ SHORT  line_count = 3;  /* Preload w/ num lines in header */
 DWORD  dwAttrib;
 
 
-get_console_info()
+int display_header()
+{
+    int i;
+
+    BRIGHT_WHITE();
+    puts("\nHD");
+    AQUA();
+    printf("Path: %s\n", search_path);
+
+    /** Draw horizontal line across screen */
+    for (i = 0; i < console_width; i++) {
+        /* Draw ------|------- */
+        // i == console_width / 2 ? putchar(194) : putchar(196)
+
+        /* Draw ----------------- */
+        putchar(196);
+    }
+
+    putchar('\n');
+    return 0;
+}
+
+
+int get_console_info()
 {
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
@@ -53,6 +76,8 @@ get_console_info()
     console_width = screen_info_t.srWindow.Right;    /* Get console width */
     console_height = screen_info_t.srWindow.Bottom
                      - screen_info_t.srWindow.Top;  /* Get console height */
+
+    return 0;
 }
 
 
@@ -198,22 +223,8 @@ int main(int argc, char* argv[])
     strcat(search_path, "\\*.*");
 
     get_console_info();
-
     process_cmdline_args(argc, argv);
-
-    BRIGHT_WHITE(); puts("\nHD");
-    AQUA(); printf("Path: %s\n", search_path);
-
-    /** Draw horizontal line across screen */
-    for (i = 0; i < console_width; i++) {
-        /* Draw ------|------- */
-        // i == console_width / 2 ? putchar(194) : putchar(196)
-
-        /* Draw ----------------- */
-        putchar(196);
-    }
-
-    putchar('\n');
+    display_header();
 
     /* Contents of directory (w/o trailing backslash) */
     dwAttrib = GetFileAttributes((LPCTSTR) search_path);
