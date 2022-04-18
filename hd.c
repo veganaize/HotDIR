@@ -50,10 +50,59 @@ float total_size     = 0.0;     /* Total of all listed file sizes */
 float total_consumed = 0.0;     /* Total actual/compressed disk usage */
 int   file_counter   = 0;       /* Total listed file count */
 
+/* Args to GetVolumeInformation() */
+TCHAR volume_name[MAX_PATH + 1] = { 0 };
+char  *root_path = "x:\\";
+
 
 int restore_console()
 {
     SetConsoleTextAttribute(hConsole, original_attributes);
+    return 0;
+}
+
+
+int display_footer()
+{
+    int i;
+
+    AQUA();  /* Draw ----|----- */
+
+    for(i = 0; i < console_width; i++) {
+        i == console_width / 2 ? putchar(193) : putchar(196);
+    }
+
+    putchar('\n');
+
+    LIGHT_AQUA();
+    printf(" %6d", file_counter);
+    LIGHT_GREEN();
+    printf(" files, totaling ");
+    LIGHT_AQUA();
+
+    if(total_size > 1023)  /* KB */
+        if((total_size /= 1024.0) > 1023)  /* MB */
+            if((total_size /= 1024.0) > 1023)  /* GB */
+                if((total_size /= 1024.0) > 1023)  /* TB */
+                    printf("%.1f TB", total_size);
+                else printf("%.1f GB", total_size);
+            else printf("%.1f MB", total_size);
+        else printf("%.1f KB", total_size);
+    else printf("%d B", (int)total_size);
+
+    LIGHT_GREEN(); printf(", consuming ");
+    LIGHT_AQUA();  printf("%d", (int)total_consumed);
+    LIGHT_GREEN(); puts(" bytes of disk space.");
+    LIGHT_AQUA();  printf(" %d", 0);
+    LIGHT_GREEN(); printf(" bytes available on Drive ");
+    LIGHT_AQUA();  printf("%c:", search_drive);
+    LIGHT_GREEN(); printf(" \t\t Volume label: ");
+
+    root_path[0] = search_drive;
+//  GetVolumeInformation(root_path, volume_name, ARRAYSIZE(volume_name), &serial_number, &max_component_length, &filesystem_flags, filesystem_name, ARRAYSIZE(filesystem_name));
+    GetVolumeInformation(root_path, volume_name, ARRAYSIZE(volume_name), NULL, NULL, NULL, NULL, 0);
+
+    LIGHT_RED(); printf("%s\n", volume_name);
     return 0;
 }
 
@@ -435,13 +484,6 @@ int process_cmdline_args(int argc, char *argv[])
 
 int main(int argc, char* argv[])
 {
-    /* Args to GetVolumeInformation() */
-    TCHAR volume_name[MAX_PATH + 1] = { 0 };
-    char  *root_path = "x:\\";
-
-/* Other variables: */
-    int   i;                        /* General counter */
-
     build_initial_search_string();
     get_console_info();
     process_cmdline_args(argc, argv);
@@ -451,40 +493,7 @@ int main(int argc, char* argv[])
 
     FindClose(search_handle);
 
-    AQUA();  /* Draw ----|----- */
-    for(i = 0; i < console_width; i++) {
-        i == console_width / 2 ? putchar(193) : putchar(196);
-    }
-    putchar('\n');
-
-    LIGHT_AQUA();  printf(" %6d", file_counter);
-    LIGHT_GREEN(); printf(" files, totaling ");
-    LIGHT_AQUA();
-
-    if(total_size > 1023)  /* KB */
-        if((total_size /= 1024.0) > 1023)  /* MB */
-            if((total_size /= 1024.0) > 1023)  /* GB */
-                if((total_size /= 1024.0) > 1023)  /* TB */
-                    printf("%.1f TB", total_size);
-                else printf("%.1f GB", total_size);
-            else printf("%.1f MB", total_size);
-        else printf("%.1f KB", total_size);
-    else printf("%d B", (int)total_size);
-
-    LIGHT_GREEN(); printf(", consuming ");
-    LIGHT_AQUA();  printf("%d", (int)total_consumed);
-    LIGHT_GREEN(); puts(" bytes of disk space.");
-    LIGHT_AQUA();  printf(" %d", 0);
-    LIGHT_GREEN(); printf(" bytes available on Drive ");
-    LIGHT_AQUA();  printf("%c:", search_drive);
-    LIGHT_GREEN(); printf(" \t\t Volume label: ");
-
-    root_path[0] = search_drive;
-//  GetVolumeInformation(root_path, volume_name, ARRAYSIZE(volume_name), &serial_number, &max_component_length, &filesystem_flags, filesystem_name, ARRAYSIZE(filesystem_name));
-    GetVolumeInformation(root_path, volume_name, ARRAYSIZE(volume_name), NULL, NULL, NULL, NULL, 0);
-
-    LIGHT_RED(); printf("%s\n", volume_name);
-
+    display_footer();
     restore_console();
     return 0;
 }
