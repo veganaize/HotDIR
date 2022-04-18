@@ -51,11 +51,19 @@ float total_consumed = 0.0;     /* Total actual/compressed disk usage */
 int   file_counter   = 0;       /* Total listed file count */
 
 
+int restore_console()
+{
+    SetConsoleTextAttribute(hConsole, original_attributes);
+    return 0;
+}
+
+
 int build_initial_search_string()
 {
     GetCurrentDirectory(MAX_PATH, search_string);
     strcpy(search_path, search_string);
     strcat(search_path, "\\*.*");
+    return 0;
 }
 
 
@@ -246,6 +254,8 @@ int process_files()
         AQUA(); printf("\263 \n");  // Print |
     } while( FindNextFile(search_handle, &file_data_t) != 0 );
     /* End do */
+
+    return 0;
 }
 
 
@@ -260,6 +270,8 @@ int fixup_path()
         /* Append backslash & wildcard pattern */
         strcat(search_path, "\\*.*");
     }
+
+    return 0;
 }
 
 
@@ -437,7 +449,6 @@ int main(int argc, char* argv[])
     fixup_path();
     process_files();
 
-
     FindClose(search_handle);
 
     AQUA();  /* Draw ----|----- */
@@ -474,6 +485,6 @@ int main(int argc, char* argv[])
 
     LIGHT_RED(); printf("%s\n", volume_name);
 
-    SetConsoleTextAttribute(hConsole, original_attributes);  //Restore console
+    restore_console();
     return 0;
 }
