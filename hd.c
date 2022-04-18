@@ -125,15 +125,13 @@ int process_files()
             == INVALID_HANDLE_VALUE) {
         puts("\nNo file or folder found.");
 
-        /* Restore console */
-        SetConsoleTextAttribute(hConsole, original_attributes);
+        restore_console();
         return -1;
 
     } else if((long)search_handle == ERROR_FILE_NOT_FOUND) {
         puts("\nNo file or folder found.");
 
-        /* Restore console */
-        SetConsoleTextAttribute(hConsole, original_attributes);
+        restore_console();
         return -1;
     }
 
@@ -404,8 +402,7 @@ int process_cmdline_args(int argc, char *argv[])
                 /* CHOICE: Display Help `/h` */
                 case 'h' : case 'H' : case '?':
                     display_help();
-                    /* Restore console */
-                    SetConsoleTextAttribute(hConsole, original_attributes);
+                    restore_console();
                     /* Quit */
                     return 0;
 
