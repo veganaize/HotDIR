@@ -33,6 +33,28 @@ char   search_drive   = 'C';     /* Pre-load with C: drive */
 char   search_string[MAX_PATH];
 char   search_path[MAX_PATH];
 
+/* Console variables: */
+CONSOLE_SCREEN_BUFFER_INFO
+       screen_info_t;
+WIN32_FIND_DATA
+       file_data_t;
+INT    console_height = 24;
+HANDLE search_handle;
+SHORT  line_count = 3;  /* Preload w/ num lines in header */
+DWORD  dwAttrib;
+
+
+get_console_info()
+{
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
+
+    original_attributes = screen_info_t.wAttributes; /* Save console info */
+    console_width = screen_info_t.srWindow.Right;    /* Get console width */
+    console_height = screen_info_t.srWindow.Bottom
+                     - screen_info_t.srWindow.Top;  /* Get console height */
+}
+
 
 int display_help()
 {
@@ -157,17 +179,6 @@ int process_cmdline_args(int argc, char *argv[])
 
 int main(int argc, char* argv[])
 {
-
-/* Console variables: */
-
-    HANDLE search_handle;
-
-    CONSOLE_SCREEN_BUFFER_INFO screen_info_t;
-    WIN32_FIND_DATA file_data_t;
-
-    SHORT  line_count = 3;  /* Pre-loaded with number of lines in header */
-    DWORD  dwAttrib;
-
     /* Args to GetVolumeInformation() */
     TCHAR volume_name[MAX_PATH + 1] = { 0 };
     char  *root_path = "x:\\";
@@ -179,21 +190,14 @@ int main(int argc, char* argv[])
     float total_size     = 0.0;     /* Total of all listed file sizes */
     float total_consumed = 0.0;     /* Total actual/compressed disk usage */
     int   file_counter   = 0;       /* Total listed file count */
-    int   console_height = 24;
     int   i;                        /* General counter */
 
+    /* Build up initial search string (?) */
     GetCurrentDirectory(MAX_PATH, search_string);
     strcpy(search_path, search_string);
     strcat(search_path, "\\*.*");
 
-    /** Get console info */
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
-
-    original_attributes = screen_info_t.wAttributes; /* Save console info */
-    console_width = screen_info_t.srWindow.Right;    /* Get console width */
-    console_height = screen_info_t.srWindow.Bottom
-                     - screen_info_t.srWindow.Top;  /* Get console height */
+    get_console_info();
 
     process_cmdline_args(argc, argv);
 
