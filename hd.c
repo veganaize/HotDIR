@@ -43,204 +43,17 @@ HANDLE search_handle;
 SHORT  line_count = 3;  /* Preload w/ num lines in header */
 DWORD  dwAttrib;
 
-
-int fixup_path()
-{
-    /* Contents of directory (w/o trailing backslash) */
-    dwAttrib = GetFileAttributes((LPCTSTR) search_path);
-
-    /* Valid directory ? */
-    if (dwAttrib != INVALID_FILE_ATTRIBUTES
-            && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
-        /* Append backslash & wildcard pattern */
-        strcat(search_path, "\\*.*");
-    }
-}
+/* File variables */
+char  *file_ext      = NULL;    /* Current file's extension */
+float file_size      = -1.0;    /* Current file's size */
+float total_size     = 0.0;     /* Total of all listed file sizes */
+float total_consumed = 0.0;     /* Total actual/compressed disk usage */
+int   file_counter   = 0;       /* Total listed file count */
 
 
-int display_header()
+int process_files()
 {
     int i;
-
-    BRIGHT_WHITE();
-    puts("\nHD");
-    AQUA();
-    printf("Path: %s\n", search_path);
-
-    /** Draw horizontal line across screen */
-    for (i = 0; i < console_width; i++) {
-        /* Draw ------|------- */
-        // i == console_width / 2 ? putchar(194) : putchar(196)
-
-        /* Draw ----------------- */
-        putchar(196);
-    }
-
-    putchar('\n');
-    return 0;
-}
-
-
-int get_console_info()
-{
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
-
-    original_attributes = screen_info_t.wAttributes; /* Save console info */
-    console_width = screen_info_t.srWindow.Right;    /* Get console width */
-    console_height = screen_info_t.srWindow.Bottom
-                     - screen_info_t.srWindow.Top;  /* Get console height */
-
-    return 0;
-}
-
-
-int display_help()
-{
-    int i;
-
-    BRIGHT_WHITE(); puts("\nHD " VERSION_STRING);
-    AQUA(); puts("Public domain by veganaiZe");
-
-    /* Draw ------------- */
-    for (i = 0; i < console_width; i++) putchar(196);
-
-    PURPLE(); printf("\nClone of ");
-    YELLOW(); printf("HotDIR ");
-    PURPLE(); puts("by Tony Overfield and Robert Woeger");
-    AQUA();   puts("\nUsage:");
-    WHITE();  puts("\tHD [options] [drive:\\][path][search-string]");
-    AQUA();   puts("\nOptions:");
-    WHITE();  printf("\t/C ");
-    AQUA();   puts("- Clear Screen");
-    WHITE();  printf("\t/# ");
-    AQUA();   puts("- Number of Columns (2,4,6) (Default: 1)");
-    WHITE();  printf("\t/L ");
-    AQUA();   puts("- Left to Right Ordering (Default: Top to Bottom)");
-    WHITE();  printf("\t/E ");
-    AQUA();   puts("- Sort by Extension");
-    WHITE();  printf("\t/D ");
-    AQUA();   puts("- Sort by Date");
-    WHITE();  printf("\t/S ");
-    AQUA();   puts("- Sort by Size");
-
-    return 0;
-}
-
-
-int process_cmdline_args(int argc, char *argv[])
-{
-    /** Process command line arguments */
-    while (argc-- > 1) {
-        if (*(argv[argc]) == '/') {
-            switch ((int)*(argv[argc]+1)) {
-
-                /* CHOICE: Display Help `/h` */
-                case 'h' : case 'H' : case '?':
-                    display_help();
-                    /* Restore console */
-                    SetConsoleTextAttribute(hConsole, original_attributes);
-                    /* Quit */
-                    return 0;
-
-                /* CHOICE: Clear Screen `/c` */
-                case 'c' : case 'C' :
-                    system("cls");
-                    break;
-
-                /* CHOICE: Sort Name `/n` */
-                case 'n' : case 'N' :
-                    puts("\nSORT_NAME -- not implemented (default)");
-                    break;
-
-                /* CHOICE: Sort Extension `/e` */
-                case 'e' : case 'E' :
-                    puts("\nSORT_EXT -- not implemented");
-                    break;
-
-                /* CHOICE: Sort Date `/d` */
-                case 'd' : case 'D' :
-                    puts("\nSORT_DATE -- not implemented");
-                    break;
-
-                /* CHOICE: Sort Size `/s` */
-                case 's' : case 'S' :
-                    puts("\nSORT_SIZE -- not implemented");
-                    break;
-            }  /* End switch */
-        /** Process any drive, folder, and file arguments */
-        } else {
-            /* Drive indicator ? */
-            if (strchr(argv[argc], ':') != NULL) {
-
-               /* Get current drive letter */
-               search_drive = toupper(*(strchr(argv[argc], ':')-1));
-
-               /* Drop drive letter */
-               argv[argc] = argv[argc]+2;
-
-            } else {
-               /* Fallback to current drive letter */
-               search_drive = *search_string;
-            }
-
-            /* Drop drive letter no matter what */
-            strcpy(search_string, search_string+2);
-
-            /* Arg has more than just drive letter ? */
-            if (argv[argc][0]) {
-
-                if (argv[argc][0] != '\\')
-                    sprintf(search_path, "%c:%s\\%s", search_drive,
-                            search_string, argv[argc])
-                    ;
-                else
-                    sprintf(search_path, "%c:%s", search_drive, argv[argc])
-                    ;
-
-            } else {
-
-                sprintf(search_path, "%c:\\", search_drive);
-
-            }
-
-            if (search_path[strlen(search_path)-1] == '\\')
-                strcat(search_path, "*.*")
-                ;
-
-        }  /* End if */
-
-    }  /* End while */
-
-    return 0;
-}
-
-
-int main(int argc, char* argv[])
-{
-    /* Args to GetVolumeInformation() */
-    TCHAR volume_name[MAX_PATH + 1] = { 0 };
-    char  *root_path = "x:\\";
-
-/* Other variables: */
-
-    char  *file_ext      = NULL;    /* Current file's extension */
-    float file_size      = -1.0;    /* Current file's size */
-    float total_size     = 0.0;     /* Total of all listed file sizes */
-    float total_consumed = 0.0;     /* Total actual/compressed disk usage */
-    int   file_counter   = 0;       /* Total listed file count */
-    int   i;                        /* General counter */
-
-    /* Build up initial search string (?) */
-    GetCurrentDirectory(MAX_PATH, search_string);
-    strcpy(search_path, search_string);
-    strcat(search_path, "\\*.*");
-
-    get_console_info();
-    process_cmdline_args(argc, argv);
-    display_header();
-    fixup_path();
-
 
     /** Attempt to retrieve first file */
     if ((search_handle = FindFirstFile((LPCTSTR)search_path, &file_data_t))
@@ -425,6 +238,201 @@ int main(int argc, char* argv[])
         AQUA(); printf("\263 \n");  // Print |
     } while( FindNextFile(search_handle, &file_data_t) != 0 );
     /* End do */
+}
+
+
+int fixup_path()
+{
+    /* Contents of directory (w/o trailing backslash) */
+    dwAttrib = GetFileAttributes((LPCTSTR) search_path);
+
+    /* Valid directory ? */
+    if (dwAttrib != INVALID_FILE_ATTRIBUTES
+            && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
+        /* Append backslash & wildcard pattern */
+        strcat(search_path, "\\*.*");
+    }
+}
+
+
+int display_header()
+{
+    int i;
+
+    BRIGHT_WHITE();
+    puts("\nHD");
+    AQUA();
+    printf("Path: %s\n", search_path);
+
+    /** Draw horizontal line across screen */
+    for (i = 0; i < console_width; i++) {
+        /* Draw ------|------- */
+        // i == console_width / 2 ? putchar(194) : putchar(196)
+
+        /* Draw ----------------- */
+        putchar(196);
+    }
+
+    putchar('\n');
+    return 0;
+}
+
+
+int get_console_info()
+{
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
+
+    original_attributes = screen_info_t.wAttributes; /* Save console info */
+    console_width = screen_info_t.srWindow.Right;    /* Get console width */
+    console_height = screen_info_t.srWindow.Bottom
+                     - screen_info_t.srWindow.Top;  /* Get console height */
+
+    return 0;
+}
+
+
+int display_help()
+{
+    int i;
+
+    BRIGHT_WHITE(); puts("\nHD " VERSION_STRING);
+    AQUA(); puts("Public domain by veganaiZe");
+
+    /* Draw ------------- */
+    for (i = 0; i < console_width; i++) putchar(196);
+
+    PURPLE(); printf("\nClone of ");
+    YELLOW(); printf("HotDIR ");
+    PURPLE(); puts("by Tony Overfield and Robert Woeger");
+    AQUA();   puts("\nUsage:");
+    WHITE();  puts("\tHD [options] [drive:\\][path][search-string]");
+    AQUA();   puts("\nOptions:");
+    WHITE();  printf("\t/C ");
+    AQUA();   puts("- Clear Screen");
+    WHITE();  printf("\t/# ");
+    AQUA();   puts("- Number of Columns (2,4,6) (Default: 1)");
+    WHITE();  printf("\t/L ");
+    AQUA();   puts("- Left to Right Ordering (Default: Top to Bottom)");
+    WHITE();  printf("\t/E ");
+    AQUA();   puts("- Sort by Extension");
+    WHITE();  printf("\t/D ");
+    AQUA();   puts("- Sort by Date");
+    WHITE();  printf("\t/S ");
+    AQUA();   puts("- Sort by Size");
+
+    return 0;
+}
+
+
+int process_cmdline_args(int argc, char *argv[])
+{
+    /** Process command line arguments */
+    while (argc-- > 1) {
+        if (*(argv[argc]) == '/') {
+            switch ((int)*(argv[argc]+1)) {
+
+                /* CHOICE: Display Help `/h` */
+                case 'h' : case 'H' : case '?':
+                    display_help();
+                    /* Restore console */
+                    SetConsoleTextAttribute(hConsole, original_attributes);
+                    /* Quit */
+                    return 0;
+
+                /* CHOICE: Clear Screen `/c` */
+                case 'c' : case 'C' :
+                    system("cls");
+                    break;
+
+                /* CHOICE: Sort Name `/n` */
+                case 'n' : case 'N' :
+                    puts("\nSORT_NAME -- not implemented (default)");
+                    break;
+
+                /* CHOICE: Sort Extension `/e` */
+                case 'e' : case 'E' :
+                    puts("\nSORT_EXT -- not implemented");
+                    break;
+
+                /* CHOICE: Sort Date `/d` */
+                case 'd' : case 'D' :
+                    puts("\nSORT_DATE -- not implemented");
+                    break;
+
+                /* CHOICE: Sort Size `/s` */
+                case 's' : case 'S' :
+                    puts("\nSORT_SIZE -- not implemented");
+                    break;
+            }  /* End switch */
+        /** Process any drive, folder, and file arguments */
+        } else {
+            /* Drive indicator ? */
+            if (strchr(argv[argc], ':') != NULL) {
+
+               /* Get current drive letter */
+               search_drive = toupper(*(strchr(argv[argc], ':')-1));
+
+               /* Drop drive letter */
+               argv[argc] = argv[argc]+2;
+
+            } else {
+               /* Fallback to current drive letter */
+               search_drive = *search_string;
+            }
+
+            /* Drop drive letter no matter what */
+            strcpy(search_string, search_string+2);
+
+            /* Arg has more than just drive letter ? */
+            if (argv[argc][0]) {
+
+                if (argv[argc][0] != '\\')
+                    sprintf(search_path, "%c:%s\\%s", search_drive,
+                            search_string, argv[argc])
+                    ;
+                else
+                    sprintf(search_path, "%c:%s", search_drive, argv[argc])
+                    ;
+
+            } else {
+
+                sprintf(search_path, "%c:\\", search_drive);
+
+            }
+
+            if (search_path[strlen(search_path)-1] == '\\')
+                strcat(search_path, "*.*")
+                ;
+
+        }  /* End if */
+
+    }  /* End while */
+
+    return 0;
+}
+
+
+int main(int argc, char* argv[])
+{
+    /* Args to GetVolumeInformation() */
+    TCHAR volume_name[MAX_PATH + 1] = { 0 };
+    char  *root_path = "x:\\";
+
+/* Other variables: */
+    int   i;                        /* General counter */
+
+    /* Build up initial search string (?) */
+    GetCurrentDirectory(MAX_PATH, search_string);
+    strcpy(search_path, search_string);
+    strcat(search_path, "\\*.*");
+
+    get_console_info();
+    process_cmdline_args(argc, argv);
+    display_header();
+    fixup_path();
+    process_files();
+
 
     FindClose(search_handle);
 
