@@ -27,11 +27,11 @@
 
 
 HANDLE hConsole;
-SHORT  console_width;
+//SHORT  console_width;
 WORD   original_attributes;
 char   search_drive   = 'C';     /* Pre-load with C: drive */
-char   search_string[MAX_PATH];
-char   search_path[MAX_PATH];
+//char   search_string[MAX_PATH];
+//char   search_path[MAX_PATH];
 
 /* Console variables: */
 CONSOLE_SCREEN_BUFFER_INFO
@@ -107,7 +107,7 @@ int display_footer()
 }
 
 
-int build_initial_search_string()
+int build_initial_search_string(char *search_path, char *search_string)
 {
     GetCurrentDirectory(MAX_PATH, search_string);
     strcpy(search_path, search_string);
@@ -116,7 +116,7 @@ int build_initial_search_string()
 }
 
 
-int process_files()
+int process_files(char *search_handle, char *search_path)
 {
     int i;
 
@@ -306,7 +306,7 @@ int process_files()
 }
 
 
-int fixup_path()
+int fixup_path(char *search_path)
 {
     /* Contents of directory (w/o trailing backslash) */
     dwAttrib = GetFileAttributes((LPCTSTR) search_path);
@@ -322,7 +322,7 @@ int fixup_path()
 }
 
 
-int display_header()
+int display_header(char *search_path)
 {
     int i;
 
@@ -481,10 +481,29 @@ int process_cmdline_args(int argc, char *argv[])
 
 int main(int argc, char* argv[])
 {
-    build_initial_search_string();
+    SHORT  console_width;
+    char   search_path[MAX_PATH];
+    char   search_string[MAX_PATH];
+
+    struct mystruct_t {
+        int i,
+        long l,
+    } strA;
+
+    original_attributes = screen_info_t.wAttributes; /* Save console info */
+    console_width = screen_info_t.srWindow.Right;    /* Get console width */
+    console_height = screen_info_t.srWindow.Bottom
+                     - screen_info_t.srWindow.Top;
+
+
+    build_initial_search_string(search_path, search_string);
     get_console_info();
-    process_cmdline_args(argc, argv);
-    display_header();
+    process_cmdline_args(argc,
+                         argv,
+                         search_drive,
+                         search_path,
+                         search_string);
+    display_header(console_width);
     fixup_path();
     process_files();
 
