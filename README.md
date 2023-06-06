@@ -1,11 +1,31 @@
 # HotDIR
-Colorized directory listing for Windows Command Prompt (CMD)
-Original by Tony Overfield and Robert Woeger
-Clone, released into the public domain, by veganaiZe
 
-This program includes NO warranty whatsoever.
-There are probably a lot of other things missing, too.
-You are advised NOT to use it!
-But if you do then you shouldn't use it for bad things.
+Colorized directory listings for the Windows command prompt.
 
-You can rename the `.EXE` file to whatever works for you `.EXE` and place it somewhere in your `PATH`
+
+## Installation
+
+Place the `hd.exe` executable somewhere in your `PATH`.
+
+
+## Usage
+
+```cmd
+C:\> hd
+C:\> hd *.exe
+C:\> hd x:\some\path
+C:\> hd x:\some\path\*.txt
+```
+
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first
+to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+
+## License
+
+[UNLICENSE](https://unlicense.org/) (Public Domain; No Warranty)
