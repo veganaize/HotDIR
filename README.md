@@ -2,6 +2,8 @@
 
 Colorized directory listings for the Windows command prompt.
 
+![image](https://github.com/veganaize/HotDIR/assets/7102064/b8608983-0ad2-4192-b9ec-50e0711c6e25)
+
 
 ## Installation
 
