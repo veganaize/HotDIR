@@ -322,7 +322,7 @@ int fixup_path(char *search_path)
 }
 
 
-int display_header(char *search_path)
+int display_header(char *search_path, SHORT console_width)
 {
     int i;
 
@@ -482,7 +482,7 @@ int process_cmdline_args(int argc, char *argv[],
 
 int main(int argc, char* argv[])
 {
-    SHORT  console_width;
+    //SHORT  console_width;
     char   search_path[MAX_PATH];
     char   search_string[MAX_PATH];
 
@@ -504,7 +504,7 @@ int main(int argc, char* argv[])
                          search_drive,
                          search_path,
                          search_string);
-    display_header(console_width);
+    display_header(search_path, console_width);
     fixup_path(search_path);
     process_files(search_handle, search_path);
 
