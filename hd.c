@@ -9,7 +9,7 @@
 #include <string.h>
 #include <windows.h>
 
-#define VERSION_STRING "0.6.3"  /* <-- Increment just before release. */
+#define VERSION_STRING "0.6.4 (pre-release)"  /* <-- Increment just before release. */
 
 #define GREEN()        SetConsoleTextAttribute(hConsole, 0x02)
 #define AQUA()         SetConsoleTextAttribute(hConsole, 0x03)
@@ -27,11 +27,11 @@
 
 
 HANDLE hConsole;
-//SHORT  console_width;
+SHORT  console_width;
 WORD   original_attributes;
 char   search_drive   = 'C';     /* Pre-load with C: drive */
-//char   search_string[MAX_PATH];
-//char   search_path[MAX_PATH];
+char   search_string[MAX_PATH];
+char   search_path[MAX_PATH];
 
 /* Console variables: */
 CONSOLE_SCREEN_BUFFER_INFO
@@ -392,7 +392,8 @@ int display_help()
 }
 
 
-int process_cmdline_args(int argc, char *argv[])
+int process_cmdline_args(int argc, char *argv[],
+                         char search_drive, char *search_path, char *search_string)
 {
     /** Process command line arguments */
     while (argc-- > 1) {
@@ -485,10 +486,10 @@ int main(int argc, char* argv[])
     char   search_path[MAX_PATH];
     char   search_string[MAX_PATH];
 
-    struct mystruct_t {
-        int i,
-        long l,
-    } strA;
+    //struct mystruct_t {
+    //    int i,
+    //    long l,
+    //} strA;
 
     original_attributes = screen_info_t.wAttributes; /* Save console info */
     console_width = screen_info_t.srWindow.Right;    /* Get console width */
@@ -504,8 +505,8 @@ int main(int argc, char* argv[])
                          search_path,
                          search_string);
     display_header(console_width);
-    fixup_path();
-    process_files();
+    fixup_path(search_path);
+    process_files(search_handle, search_path);
 
     FindClose(search_handle);
 
