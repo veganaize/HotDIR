@@ -107,6 +107,20 @@ int display_footer()
 }
 
 
+void determine_size_suffix(int size_bytes, char *string, size_t string_size)
+{
+    if(size_bytes > 1023)  /* KB */
+        if((size_bytes /= 1024.0) > 1023)  /* MB */
+            if((size_bytes /= 1024.0) > 1023)  /* GB */
+                if((size_bytes /= 1024.0) > 1023)  /* TB */
+                    sprintf(string, "TB", size_bytes);
+                else sprintf(string, "GB", size_bytes);
+            else sprintf(string, "MB", size_bytes);
+        else sprintf(string, "KB", size_bytes);
+    else sprintf(string, "B", (int) size_bytes);
+}
+
+
 int build_initial_search_string(char *search_path, char *search_string)
 {
     GetCurrentDirectory(MAX_PATH, search_string);
