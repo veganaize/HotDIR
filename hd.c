@@ -359,17 +359,17 @@ int display_header(char *search_path, SHORT console_width)
 }
 
 
-int get_console_info()
+CONSOLE_SCREEN_BUFFER_INFO get_console_info()
 {
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
 
-    original_attributes = screen_info_t.wAttributes; /* Save console info */
+    original_attributes = screen_info_t.wAttributes; /* Save console colors */
     console_width = screen_info_t.srWindow.Right;    /* Get console width */
     console_height = screen_info_t.srWindow.Bottom
                      - screen_info_t.srWindow.Top;  /* Get console height */
 
-    return 0;
+    return screen_info_t;
 }
 
 

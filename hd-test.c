@@ -1,5 +1,23 @@
 #include <stdio.h>
+//#include <windows.h>
 #include "hd.h"
+
+
+int test__get_console_info()  // Windows specific
+{
+    /* Arrange */
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+    /* Act */
+    csbi = get_console_info();
+
+    /* Assert */
+    printf("%d\n", csbi.wAttributes);
+    printf("%d\n", csbi.srWindow.Right);
+    printf("%d\n", csbi.srWindow.Bottom - csbi.srWindow.Top);
+
+    return 0;
+}
 
 
 //int test__create_footer()
@@ -49,4 +67,5 @@ int main()
 {
     test__determine_size_suffix__returns_b();
     //test__create_footer();
+    test__get_console_info();
 }
