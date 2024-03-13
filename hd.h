@@ -14,7 +14,7 @@ int display_help();
 int process_cmdline_args(int argc, char *argv[], char search_drive, char *search_path, char *search_string);
 void determine_size_suffix(int size_bytes, char *string, size_t string_size);
 create_footer(char *footer_string, short console_width, char *root_path, char search_drive);
-void create_horizontal_line();
+void create_horizontal_line(char * string, CONSOLE_SCREEN_BUFFER_INFO csbi);
 
 
-#endif
+#endif  /* HD_H */

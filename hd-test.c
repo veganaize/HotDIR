@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <windows.h>
 #include "hd.h"
 
@@ -6,16 +7,27 @@
 int test__create_horizontal_line()
 {
     /* Arrange */
-    char string[8192];
+    char string[8192] = { '\0' };
     //COORD coord = { (short)0, (short)0 };
     //SMALL_RECT small_rect = { (SHORT)0, (SHORT)0, (SHORT)79, (SHORT)39 };
-    //struct _CONSOLE_SCREEN_BUFFER_INFO csbi = { coord, coord, NULL, small_rect, coord };
+    CONSOLE_SCREEN_BUFFER_INFO csbi = {
+            80, 40,       // COORD
+            0, 0,         // COORD
+            14,           // WORD
+            0, 0, 79, 39  // SMALL_RECT
+            //100, 100      //COORD
+    };
+    size_t string_length = 0;
 
     /* Act */
-    create_horizontal_line(string);
+    create_horizontal_line(string, csbi);
 
     /* Assert */
-    strlen(string);
+    string_length = strlen(string);
+    if (string_length != csbi.srWindow.Right + 2) {
+        puts("LENGTH SHOULD MATCH");
+        return 1;
+    }
 
     return 0;
 }

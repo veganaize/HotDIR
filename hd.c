@@ -9,6 +9,8 @@
 #include <string.h>
 #include <windows.h>
 
+#include "hd.h"
+
 #define VERSION_STRING "0.6.4 (pre-release)"  /* <-- Increment just before release. */
 
 #define GREEN()        SetConsoleTextAttribute(hConsole, 0x02)
@@ -27,7 +29,7 @@
 
 
 HANDLE hConsole;
-SHORT  console_width;
+SHORT  g_console_width;
 WORD   original_attributes;
 char   search_drive   = 'C';     /* Pre-load with C: drive */
 char   search_string[MAX_PATH];
@@ -35,7 +37,7 @@ char   search_path[MAX_PATH];
 
 /* Console variables: */
 CONSOLE_SCREEN_BUFFER_INFO
-       screen_info_t;
+       g_screen_info_t;
 WIN32_FIND_DATA
        file_data_t;
 INT    console_height = 24;
@@ -64,15 +66,10 @@ int restore_console()
 
 int display_footer()
 {
-//    int i;
-//
-//    AQUA();  /* Draw ----|----- */
-//
-//    for(i = 0; i < console_width; i++) {
-//        i == console_width / 2 ? putchar(193) : putchar(196);
-//    }
-//
-//    putchar('\n');
+    char string[8192] = { '\0' };
+
+    AQUA();
+    create_horizontal_line(string, g_screen_info_t);
 
     LIGHT_AQUA();
     printf(" %6d", file_counter);
@@ -107,17 +104,23 @@ int display_footer()
 }
 
 
-void create_horizontal_line()
+void create_horizontal_line(char * string, CONSOLE_SCREEN_BUFFER_INFO csbi)
 {
-   int i;
+    SHORT i;
+    SHORT console_width = csbi.srWindow.Right + 1;
 
-    AQUA();  /* Draw ----|----- */
-
-    for(i = 0; i < console_width; i++) {
-        i == console_width / 2 ? putchar(193) : putchar(196);
+    /* Draw line in string */
+    for(i = 0; i < console_width; ++i) {
+        if (i == console_width / 2) {
+            strcat(string, "|");
+        } else {
+            strcat(string, "-");
+        }
     }
 
-    putchar('\n');
+    strcat(string, "\n");
+
+    return;
 }
 
 
@@ -287,8 +290,8 @@ int process_files(char *search_handle, char *search_path)
         /* Pause if console screen is full */
         if(++line_count == console_height) {
             line_count = 0;
-            GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
-            dwAttrib = screen_info_t.wAttributes;
+            GetConsoleScreenBufferInfo(hConsole, &g_screen_info_t);
+            dwAttrib = g_screen_info_t.wAttributes;
             GRAY(); system("PAUSE");
             SetConsoleTextAttribute(hConsole, dwAttrib); // Restore Color
         }
@@ -299,7 +302,7 @@ int process_files(char *search_handle, char *search_path)
         }
 
         /* Display file name */
-        printf("%-*s", console_width / 2 - 8, file_data_t.cFileName);
+        printf("%-*s", g_console_width / 2 - 8, file_data_t.cFileName);
         //printf("%s\n", file_ext);
 
         /* Display <dir> for directories */
@@ -376,14 +379,14 @@ int display_header(char *search_path, SHORT console_width)
 CONSOLE_SCREEN_BUFFER_INFO get_console_info()
 {
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleScreenBufferInfo(hConsole, &screen_info_t);
+    GetConsoleScreenBufferInfo(hConsole, &g_screen_info_t);
 
-    original_attributes = screen_info_t.wAttributes; /* Save console colors */
-    console_width = screen_info_t.srWindow.Right;    /* Get console width */
-    console_height = screen_info_t.srWindow.Bottom
-                     - screen_info_t.srWindow.Top;  /* Get console height */
+    original_attributes = g_screen_info_t.wAttributes; /* Save console colors */
+    g_console_width = g_screen_info_t.srWindow.Right;    /* Get console width */
+    console_height = g_screen_info_t.srWindow.Bottom
+                     - g_screen_info_t.srWindow.Top;  /* Get console height */
 
-    return screen_info_t;
+    return g_screen_info_t;
 }
 
 
@@ -395,7 +398,7 @@ int display_help()
     AQUA(); puts("Public domain by veganaiZe");
 
     /* Draw ------------- */
-    for (i = 0; i < console_width; i++) putchar(196);
+    for (i = 0; i < g_console_width; i++) putchar(196);
 
     PURPLE(); printf("\nClone of ");
     YELLOW(); printf("HotDIR ");
