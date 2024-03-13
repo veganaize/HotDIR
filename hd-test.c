@@ -1,23 +1,41 @@
 #include <stdio.h>
-//#include <windows.h>
+#include <windows.h>
 #include "hd.h"
 
 
-int test__get_console_info()  // Windows specific
+int test__create_horizontal_line()
 {
     /* Arrange */
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    char string[8192];
+    //COORD coord = { (short)0, (short)0 };
+    //SMALL_RECT small_rect = { (SHORT)0, (SHORT)0, (SHORT)79, (SHORT)39 };
+    //struct _CONSOLE_SCREEN_BUFFER_INFO csbi = { coord, coord, NULL, small_rect, coord };
 
     /* Act */
-    csbi = get_console_info();
+    create_horizontal_line(string);
 
     /* Assert */
-    printf("%d\n", csbi.wAttributes);
-    printf("%d\n", csbi.srWindow.Right);
-    printf("%d\n", csbi.srWindow.Bottom - csbi.srWindow.Top);
+    strlen(string);
 
     return 0;
 }
+
+
+//int test__get_console_info()  // Windows specific
+//{
+//    /* Arrange */
+//    CONSOLE_SCREEN_BUFFER_INFO csbi;
+//
+//    /* Act */
+//    csbi = get_console_info();
+//
+//    /* Assert */
+//    printf("%d\n", csbi.wAttributes);
+//    printf("%d\n", csbi.srWindow.Right);
+//    printf("%d\n", csbi.srWindow.Bottom - csbi.srWindow.Top);
+//
+//    return 0;
+//}
 
 
 //int test__create_footer()
@@ -66,6 +84,19 @@ int test__determine_size_suffix__returns_b()
 int main()
 {
     test__determine_size_suffix__returns_b();
+    test__create_horizontal_line();
     //test__create_footer();
-    test__get_console_info();
+    //test__get_console_info();
 }
+
+
+//int test__something()
+//{
+//    /* Arrange */
+//
+//    /* Act */
+//
+//    /* Assert */
+//
+//    return 0;
+//}

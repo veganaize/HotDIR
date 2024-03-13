@@ -64,15 +64,15 @@ int restore_console()
 
 int display_footer()
 {
-    int i;
-
-    AQUA();  /* Draw ----|----- */
-
-    for(i = 0; i < console_width; i++) {
-        i == console_width / 2 ? putchar(193) : putchar(196);
-    }
-
-    putchar('\n');
+//    int i;
+//
+//    AQUA();  /* Draw ----|----- */
+//
+//    for(i = 0; i < console_width; i++) {
+//        i == console_width / 2 ? putchar(193) : putchar(196);
+//    }
+//
+//    putchar('\n');
 
     LIGHT_AQUA();
     printf(" %6d", file_counter);
@@ -104,6 +104,20 @@ int display_footer()
 
     LIGHT_RED(); printf("%s\n", volume_name);
     return 0;
+}
+
+
+void create_horizontal_line()
+{
+   int i;
+
+    AQUA();  /* Draw ----|----- */
+
+    for(i = 0; i < console_width; i++) {
+        i == console_width / 2 ? putchar(193) : putchar(196);
+    }
+
+    putchar('\n');
 }
 
 
