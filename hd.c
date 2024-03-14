@@ -56,17 +56,16 @@ void create_horizontal_line(char * string, CONSOLE_SCREEN_BUFFER_INFO csbi)
 {
     SHORT i;
     SHORT console_width = csbi.srWindow.Right + 1;
+    unsigned char horizontal_line_character[2] = { 196, 0 };
 
     /* Draw line in string */
     for(i = 0; i < console_width; ++i) {
-        if (i == console_width / 2) {
-            strcat(string, "|");
-        } else {
-            strcat(string, "-");
-        }
+        //if (i == console_width / 2) {
+        //    strcat(string, "%c", );
+        //} else {
+            strncat(string, horizontal_line_character, 1);
+        //}
     }
-
-    strcat(string, "\n");
 
     return;
 }
@@ -88,10 +87,11 @@ void determine_size_suffix(int size_bytes, char *string, size_t string_size)
 
 int display_footer()
 {
-    char string[8192] = { '\0' };
+    unsigned char line[8192] = { 0 };
 
     AQUA();
-    create_horizontal_line(string, g_screen_info_t);
+    create_horizontal_line(line, g_screen_info_t);
+    printf("%s", line);
 
     LIGHT_AQUA();
     printf(" %6d", g_file_counter);
@@ -129,6 +129,7 @@ int display_footer()
 int display_header(char *search_path, SHORT console_width)
 {
     int i;
+    unsigned char line[8192] = { 0 };
 
     BRIGHT_WHITE();
     puts("\nHD");
@@ -136,15 +137,9 @@ int display_header(char *search_path, SHORT console_width)
     printf("Path: %s\n", search_path);
 
     /** Draw horizontal line across screen */
-    for (i = 0; i < console_width; i++) {
-        /* Draw ------|------- */
-        // i == console_width / 2 ? putchar(194) : putchar(196)
+    create_horizontal_line(line, g_screen_info_t);
+    printf("%s", line);
 
-        /* Draw ----------------- */
-        putchar(196);
-    }
-
-    putchar('\n');
     return 0;
 }
 
@@ -201,6 +196,7 @@ int fixup_path(char *search_path)
 CONSOLE_SCREEN_BUFFER_INFO get_console_info()
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    g_hConsole = hConsole;
     GetConsoleScreenBufferInfo(hConsole, &g_screen_info_t);
 
     g_original_attributes = g_screen_info_t.wAttributes; /* Save console colors */
@@ -486,6 +482,7 @@ int process_files(char *search_handle, char *search_path)
     } while( FindNextFile(search_handle, &g_file_data_t) != 0 );
     /* End do */
 
+    FindClose(search_handle);
     return 0;
 }
 

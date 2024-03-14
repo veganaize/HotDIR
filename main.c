@@ -4,8 +4,9 @@
 
 int main(int argc, char* argv[])
 {
-    char   search_path[MAX_PATH];
-    char   search_string[MAX_PATH];
+    char search_path[MAX_PATH] = { 0 };
+    char search_string[MAX_PATH] = { 0 };
+    HANDLE search_handle = 0;
 
     CONSOLE_SCREEN_BUFFER_INFO screen_info = get_console_info();
     WORD original_console_colors = screen_info.wAttributes;
@@ -22,8 +23,6 @@ int main(int argc, char* argv[])
     display_header(search_path, console_width);
     fixup_path(search_path);
     process_files(search_handle, search_path);
-
-    FindClose(search_handle);
 
     display_footer();
     restore_console(original_console_colors);
