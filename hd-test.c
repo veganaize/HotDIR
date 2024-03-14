@@ -7,7 +7,7 @@
 int test__create_horizontal_line()
 {
     /* Arrange */
-    char string[8192] = { '\0' };
+    char string[8192] = { 0 };
     CONSOLE_SCREEN_BUFFER_INFO csbi = {
             80, 40,       /* COORD */
             0, 0,         /* COORD */
@@ -16,13 +16,15 @@ int test__create_horizontal_line()
             //100, 100      /* COORD */
     };
     size_t string_length = 0;
+    SHORT console_width = 0;
 
     /* Act */
     create_horizontal_line(string, csbi);
 
     /* Assert */
+    console_width = csbi.srWindow.Right + 1;
     string_length = strlen(string);
-    if (string_length != csbi.srWindow.Right + 2) {
+    if (string_length != console_width) {
         puts("LENGTH SHOULD MATCH");
         return 1;
     }
