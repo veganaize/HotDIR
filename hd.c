@@ -200,8 +200,8 @@ int fixup_path(char *search_path)
 
 CONSOLE_SCREEN_BUFFER_INFO get_console_info()
 {
-    g_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleScreenBufferInfo(g_hConsole, &g_screen_info_t);
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleScreenBufferInfo(hConsole, &g_screen_info_t);
 
     g_original_attributes = g_screen_info_t.wAttributes; /* Save console colors */
     g_console_width = g_screen_info_t.srWindow.Right;    /* Get console width */
