@@ -33,14 +33,14 @@ DWORD  g_dwAttrib;
 
 /* File variables */
 char  *g_file_ext      = NULL;    /* Current file's extension */
-float file_size      = -1.0;    /* Current file's size */
-float total_size     = 0.0;     /* Total of all listed file sizes */
-float total_consumed = 0.0;     /* Total actual/compressed disk usage */
-int   file_counter   = 0;       /* Total listed file count */
+float g_file_size      = -1.0;    /* Current file's size */
+float g_total_size     = 0.0;     /* Total of all listed file sizes */
+float g_total_consumed = 0.0;     /* Total actual/compressed disk usage */
+int   g_file_counter   = 0;       /* Total listed file count */
 
 /* Args to GetVolumeInformation() */
-TCHAR volume_name[MAX_PATH + 1] = { 0 };
-char  *root_path = "x:\\";
+TCHAR g_volume_name[MAX_PATH + 1] = { 0 };
+char  *g_root_path = "x:\\";
 
 
 int build_initial_search_string(char *search_path, char *search_string)
@@ -94,34 +94,34 @@ int display_footer()
     create_horizontal_line(string, g_screen_info_t);
 
     LIGHT_AQUA();
-    printf(" %6d", file_counter);
+    printf(" %6d", g_file_counter);
     LIGHT_GREEN();
     printf(" files, totaling ");
     LIGHT_AQUA();
 
-    if(total_size > 1023)  /* KB */
-        if((total_size /= 1024.0) > 1023)  /* MB */
-            if((total_size /= 1024.0) > 1023)  /* GB */
-                if((total_size /= 1024.0) > 1023)  /* TB */
-                    printf("%.1f TB", total_size);
-                else printf("%.1f GB", total_size);
-            else printf("%.1f MB", total_size);
-        else printf("%.1f KB", total_size);
-    else printf("%d B", (int)total_size);
+    if(g_total_size > 1023)  /* KB */
+        if((g_total_size /= 1024.0) > 1023)  /* MB */
+            if((g_total_size /= 1024.0) > 1023)  /* GB */
+                if((g_total_size /= 1024.0) > 1023)  /* TB */
+                    printf("%.1f TB", g_total_size);
+                else printf("%.1f GB", g_total_size);
+            else printf("%.1f MB", g_total_size);
+        else printf("%.1f KB", g_total_size);
+    else printf("%d B", (int)g_total_size);
 
     LIGHT_GREEN(); printf(", consuming ");
-    LIGHT_AQUA();  printf("%d", (int)total_consumed);
+    LIGHT_AQUA();  printf("%d", (int)g_total_consumed);
     LIGHT_GREEN(); puts(" bytes of disk space.");
     LIGHT_AQUA();  printf(" %d", 0);
     LIGHT_GREEN(); printf(" bytes available on Drive ");
     LIGHT_AQUA();  printf("%c:", g_search_drive);
     LIGHT_GREEN(); printf(" \t\t Volume label: ");
 
-    root_path[0] = g_search_drive;
-//  GetVolumeInformation(root_path, volume_name, ARRAYSIZE(volume_name), &serial_number, &max_component_length, &filesystem_flags, filesystem_name, ARRAYSIZE(filesystem_name));
-    GetVolumeInformation(root_path, volume_name, ARRAYSIZE(volume_name), NULL, NULL, NULL, NULL, 0);
+    g_root_path[0] = g_search_drive;
+//  GetVolumeInformation(g_root_path, g_volume_name, ARRAYSIZE(g_volume_name), &serial_number, &max_component_length, &filesystem_flags, filesystem_name, ARRAYSIZE(filesystem_name));
+    GetVolumeInformation(g_root_path, g_volume_name, ARRAYSIZE(g_volume_name), NULL, NULL, NULL, NULL, 0);
 
-    LIGHT_RED(); printf("%s\n", volume_name);
+    LIGHT_RED(); printf("%s\n", g_volume_name);
     return 0;
 }
 
@@ -324,7 +324,7 @@ int process_files(char *search_handle, char *search_path)
         if (g_file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
             LIGHT_PURPLE();
         } else {
-            file_counter++;
+            g_file_counter++;
 
             /* Get file extension */
             g_file_ext = strrchr(g_file_data_t.cFileName, '.');
@@ -464,22 +464,22 @@ int process_files(char *search_handle, char *search_path)
 
         /* Otherwise display file size */
         } else {
-            file_size = (float)((g_file_data_t.nFileSizeHigh * (MAXDWORD+1))
+            g_file_size = (float)((g_file_data_t.nFileSizeHigh * (MAXDWORD+1))
                                     + g_file_data_t.nFileSizeLow);
-            total_size += file_size;
+            g_total_size += g_file_size;
             GRAY();
 
-            if(file_size > 1023)  /* KB */
-                if((file_size /= 1024.0) > 1023)  /* MB */
-                    if((file_size /= 1024.0) > 1023)  /* BB */
-                        if((file_size /= 1024.0) > 1023)  /* TB */
-                            printf("% 5.1f TB", file_size);
-                        else printf("% 5.1f GB", file_size);
-                    else printf("% 5.1f MB", file_size);
-                else printf("% 5.1f KB", file_size);
-            else printf("% 5d B ", (int)file_size);
+            if(g_file_size > 1023)  /* KB */
+                if((g_file_size /= 1024.0) > 1023)  /* MB */
+                    if((g_file_size /= 1024.0) > 1023)  /* BB */
+                        if((g_file_size /= 1024.0) > 1023)  /* TB */
+                            printf("% 5.1f TB", g_file_size);
+                        else printf("% 5.1f GB", g_file_size);
+                    else printf("% 5.1f MB", g_file_size);
+                else printf("% 5.1f KB", g_file_size);
+            else printf("% 5d B ", (int)g_file_size);
 
-            //total_consumed += (float)((*lpFileSizeHigh * (MAXDWORD+1)) + GetCompressedFileSize(g_file_data_t.cFileName, lpFileSizeHigh));
+            //g_total_consumed += (float)((*lpFileSizeHigh * (MAXDWORD+1)) + GetCompressedFileSize(g_file_data_t.cFileName, lpFileSizeHigh));
         }
 
         AQUA(); printf("\263 \n");  // Print |
