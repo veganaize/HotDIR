@@ -46,9 +46,12 @@ int test__get_console_info()  // Windows specific
     get_console_info(&console);
 
     /* Assert */
-    console.colors;
-    console.width;
-    console.height;
+    if (! (console.colors > 0
+            || console.width > 0
+            || console.height > 0)) {
+        puts("CONSOLE ATTRIBUTES SHOULD BE SET");
+        return 1;
+    }
 
     return 0;
 }

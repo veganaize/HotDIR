@@ -200,10 +200,13 @@ struct console_info * get_console_info(struct console_info * p_console)
     GetConsoleScreenBufferInfo(hConsole, &g_screen_info_t);
 
     g_original_attributes = g_screen_info_t.wAttributes; /* Save console colors */
-    //p_console->colors
+    p_console->colors = g_screen_info_t.wAttributes;
     g_console_width = g_screen_info_t.srWindow.Right;    /* Get console width */
+    p_console->width = g_screen_info_t.srWindow.Right + 1;
     g_console_height = g_screen_info_t.srWindow.Bottom
                      - g_screen_info_t.srWindow.Top;  /* Get console height */
+    p_console->height = g_screen_info_t.srWindow.Bottom
+                        - g_screen_info_t.srWindow.Top;
 
     return p_console;
 }
