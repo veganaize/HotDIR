@@ -89,15 +89,15 @@ int display_footer()
 {
     unsigned char line[8192] = { 0 };
 
-    AQUA();
+    FG_AQUA();
     create_horizontal_line(line, g_screen_info_t);
     printf("%s", line);
 
-    LIGHT_AQUA();
+    FG_LIGHT_AQUA();
     printf(" %6d", g_file_counter);
-    LIGHT_GREEN();
+    FG_LIGHT_GREEN();
     printf(" files, totaling ");
-    LIGHT_AQUA();
+    FG_LIGHT_AQUA();
 
     if(g_total_size > 1023)  /* KB */
         if((g_total_size /= 1024.0) > 1023)  /* MB */
@@ -109,19 +109,19 @@ int display_footer()
         else printf("%.1f KB", g_total_size);
     else printf("%d B", (int)g_total_size);
 
-    LIGHT_GREEN(); printf(", consuming ");
-    LIGHT_AQUA();  printf("%d", (int)g_total_consumed);
-    LIGHT_GREEN(); puts(" bytes of disk space.");
-    LIGHT_AQUA();  printf(" %d", 0);
-    LIGHT_GREEN(); printf(" bytes available on Drive ");
-    LIGHT_AQUA();  printf("%c:", g_search_drive);
-    LIGHT_GREEN(); printf(" \t\t Volume label: ");
+    FG_LIGHT_GREEN(); printf(", consuming ");
+    FG_LIGHT_AQUA();  printf("%d", (int)g_total_consumed);
+    FG_LIGHT_GREEN(); puts(" bytes of disk space.");
+    FG_LIGHT_AQUA();  printf(" %d", 0);
+    FG_LIGHT_GREEN(); printf(" bytes available on Drive ");
+    FG_LIGHT_AQUA();  printf("%c:", g_search_drive);
+    FG_LIGHT_GREEN(); printf(" \t\t Volume label: ");
 
     g_root_path[0] = g_search_drive;
 //  GetVolumeInformation(g_root_path, g_volume_name, ARRAYSIZE(g_volume_name), &serial_number, &max_component_length, &filesystem_flags, filesystem_name, ARRAYSIZE(filesystem_name));
     GetVolumeInformation(g_root_path, g_volume_name, ARRAYSIZE(g_volume_name), NULL, NULL, NULL, NULL, 0);
 
-    LIGHT_RED(); printf("%s\n", g_volume_name);
+    FG_LIGHT_RED(); printf("%s\n", g_volume_name);
     return 0;
 }
 
@@ -131,9 +131,9 @@ int display_header(char *search_path, SHORT console_width)
     int i;
     unsigned char line[8192] = { 0 };
 
-    BRIGHT_WHITE();
+    FG_BRIGHT_WHITE();
     puts("\nHD");
-    AQUA();
+    FG_AQUA();
     printf("Path: %s\n", search_path);
 
     /** Draw horizontal line across screen */
@@ -148,30 +148,30 @@ int display_help()
 {
     int i;
 
-    BRIGHT_WHITE(); puts("\nHD " VERSION_STRING);
-    AQUA(); puts("Public domain by veganaiZe");
+    FG_BRIGHT_WHITE(); puts("\nHD " VERSION_STRING);
+    FG_AQUA(); puts("Public domain by veganaiZe");
 
     /* Draw ------------- */
     for (i = 0; i < g_console_width; i++) putchar(196);
 
-    PURPLE(); printf("\nClone of ");
-    YELLOW(); printf("HotDIR ");
-    PURPLE(); puts("by Tony Overfield and Robert Woeger");
-    AQUA();   puts("\nUsage:");
-    WHITE();  puts("\tHD [options] [drive:\\][path][search-string]");
-    AQUA();   puts("\nOptions:");
-    WHITE();  printf("\t/C ");
-    AQUA();   puts("- Clear Screen");
-    WHITE();  printf("\t/# ");
-    AQUA();   puts("- Number of Columns (2,4,6) (Default: 1)");
-    WHITE();  printf("\t/L ");
-    AQUA();   puts("- Left to Right Ordering (Default: Top to Bottom)");
-    WHITE();  printf("\t/E ");
-    AQUA();   puts("- Sort by Extension");
-    WHITE();  printf("\t/D ");
-    AQUA();   puts("- Sort by Date");
-    WHITE();  printf("\t/S ");
-    AQUA();   puts("- Sort by Size");
+    FG_PURPLE(); printf("\nClone of ");
+    FG_YELLOW(); printf("HotDIR ");
+    FG_PURPLE(); puts("by Tony Overfield and Robert Woeger");
+    FG_AQUA();   puts("\nUsage:");
+    FG_WHITE();  puts("\tHD [options] [drive:\\][path][search-string]");
+    FG_AQUA();   puts("\nOptions:");
+    FG_WHITE();  printf("\t/C ");
+    FG_AQUA();   puts("- Clear Screen");
+    FG_WHITE();  printf("\t/# ");
+    FG_AQUA();   puts("- Number of Columns (2,4,6) (Default: 1)");
+    FG_WHITE();  printf("\t/L ");
+    FG_AQUA();   puts("- Left to Right Ordering (Default: Top to Bottom)");
+    FG_WHITE();  printf("\t/E ");
+    FG_AQUA();   puts("- Sort by Extension");
+    FG_WHITE();  printf("\t/D ");
+    FG_AQUA();   puts("- Sort by Date");
+    FG_WHITE();  printf("\t/S ");
+    FG_AQUA();   puts("- Sort by Size");
 
     return 0;
 }
@@ -193,18 +193,19 @@ int fixup_path(char *search_path)
 }
 
 
-CONSOLE_SCREEN_BUFFER_INFO get_console_info()
+struct console_info * get_console_info(struct console_info * p_console)
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    g_hConsole = hConsole;
+    g_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     GetConsoleScreenBufferInfo(hConsole, &g_screen_info_t);
 
     g_original_attributes = g_screen_info_t.wAttributes; /* Save console colors */
+    //p_console->colors
     g_console_width = g_screen_info_t.srWindow.Right;    /* Get console width */
     g_console_height = g_screen_info_t.srWindow.Bottom
                      - g_screen_info_t.srWindow.Top;  /* Get console height */
 
-    return g_screen_info_t;
+    return p_console;
 }
 
 
@@ -318,7 +319,7 @@ int process_files(char *search_handle, char *search_path)
     do {
         /* File is directory ? */
         if (g_file_data_t.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-            LIGHT_PURPLE();
+            FG_LIGHT_PURPLE();
         } else {
             g_file_counter++;
 
@@ -333,7 +334,7 @@ int process_files(char *search_handle, char *search_path)
 
                 /* Set color based on file extension */
                 if (strcmp(g_file_ext, ".exe") == 0 || strcmp(g_file_ext, ".msi") == 0 )
-                    LIGHT_AQUA();
+                    FG_LIGHT_AQUA();
                 else if(strcmp(g_file_ext, ".txt") == 0 || strcmp(g_file_ext, ".doc") == 0 || strcmp(g_file_ext, ".c") == 0
                             || strcmp(g_file_ext, ".rtf") == 0 || strcmp(g_file_ext, ".cc") == 0 || strcmp(g_file_ext, ".asm") == 0
                             || strcmp(g_file_ext, ".docx") == 0 || strcmp(g_file_ext, ".xml") == 0 || strcmp(g_file_ext, ".odt") == 0
@@ -369,17 +370,17 @@ int process_files(char *search_handle, char *search_path)
                             || strcmp(g_file_ext, ".aspx") == 0 || strcmp(g_file_ext, ".csr") == 0 || strcmp(g_file_ext, ".rss") == 0
                             || strcmp(g_file_ext, ".h") == 0 || strcmp(g_file_ext, ".a") == 0 || strcmp(g_file_ext, ".cxx") == 0
                             || strcmp(g_file_ext, ".hxx") == 0 || strcmp(g_file_ext, ".xps") == 0 || strcmp(g_file_ext, ".oxps") == 0 )
-                    BRIGHT_WHITE();
+                    FG_BRIGHT_WHITE();
                 else if(strcmp(g_file_ext, ".bat") == 0 || strcmp(g_file_ext, ".cmd") == 0 || strcmp(g_file_ext, ".btm") == 0)
-                    LIGHT_RED();
+                    FG_LIGHT_RED();
                 else if(strcmp(g_file_ext, ".com") == 0 || strcmp(g_file_ext, ".msc") == 0 )
-                    LIGHT_GREEN();
+                    FG_LIGHT_GREEN();
                 else if(strcmp(g_file_ext, ".bas") == 0 || strcmp(g_file_ext, ".pas") == 0 || strcmp(g_file_ext, ".js") == 0
                             || strcmp(g_file_ext, ".jse") == 0 || strcmp(g_file_ext, ".vbs") == 0 || strcmp(g_file_ext, ".vbe") == 0
                             || strcmp(g_file_ext, ".wsf") == 0 || strcmp(g_file_ext, ".php") == 0 || strcmp(g_file_ext, ".py") == 0
                             || strcmp(g_file_ext, ".pl") == 0 || strcmp(g_file_ext, ".rb") == 0 || strcmp(g_file_ext, ".xsl") == 0
                             || strcmp(g_file_ext, ".tcl") == 0 || strcmp(g_file_ext, ".wsh") == 0)
-                    GREEN();
+                    FG_GREEN();
                 else if(strcmp(g_file_ext, ".mp3") == 0 || strcmp(g_file_ext, ".mpg") == 0 || strcmp(g_file_ext, ".mpeg") == 0
                             || strcmp(g_file_ext, ".jpg") == 0 || strcmp(g_file_ext, ".jpeg") == 0 || strcmp(g_file_ext, ".gif") == 0
                             || strcmp(g_file_ext, ".png") == 0 || strcmp(g_file_ext, ".tif") == 0 || strcmp(g_file_ext, ".tiff") == 0
@@ -409,7 +410,7 @@ int process_files(char *search_handle, char *search_path)
                             || strcmp(g_file_ext, ".vob") == 0 || strcmp(g_file_ext, ".pspimge") == 0 || strcmp(g_file_ext, ".thm") == 0
                             || strcmp(g_file_ext, ".yuv") == 0 || strcmp(g_file_ext, ".divx") == 0 || strcmp(g_file_ext, ".m4p") == 0
                             || strcmp(g_file_ext, ".mts") == 0 || strcmp(g_file_ext, ".pam") == 0)
-                    LIGHT_YELLOW();
+                    FG_LIGHT_YELLOW();
                 else if( strcmp(g_file_ext, ".7z") == 0 || strcmp(g_file_ext, ".zip") == 0 || strcmp(g_file_ext, ".gz") == 0
                             || strcmp(g_file_ext, ".tar") == 0 || strcmp(g_file_ext, ".bz2") == 0 || strcmp(g_file_ext, ".rar") == 0
                             || strcmp(g_file_ext, ".arc") == 0 || strcmp(g_file_ext, ".devpak") == 0 || strcmp(g_file_ext, ".xz") == 0
@@ -431,9 +432,9 @@ int process_files(char *search_handle, char *search_path)
                             || strcmp(g_file_ext, ".hqx") == 0 || strcmp(g_file_ext, ".hcx") == 0 || strcmp(g_file_ext, ".hex") == 0
                             || strcmp(g_file_ext, ".deb") == 0 || strcmp(g_file_ext, ".rpm") == 0 || strcmp(g_file_ext, ".mdf") == 0
                             || strcmp(g_file_ext, ".cue") == 0 || strcmp(g_file_ext, ".bin") == 0 || strcmp(g_file_ext, ".apk") == 0)
-                    YELLOW();
-                else GRAY();  // (everything else)
-            } else GRAY();  // (no extension)
+                    FG_YELLOW();
+                else FG_GRAY();  // (everything else)
+            } else FG_GRAY();  // (no extension)
         } /* First if/else */
 
         /* Pause if console screen is full */
@@ -441,13 +442,13 @@ int process_files(char *search_handle, char *search_path)
             g_line_count = 0;
             GetConsoleScreenBufferInfo(g_hConsole, &g_screen_info_t);
             g_dwAttrib = g_screen_info_t.wAttributes;
-            GRAY(); system("PAUSE");
+            FG_GRAY(); system("PAUSE");
             SetConsoleTextAttribute(g_hConsole, g_dwAttrib); // Restore Color
         }
 
-        /* "DARK RED" for hidden files */
+        /* "DARK FG_RED" for hidden files */
         if(g_file_data_t.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) {
-            RED();
+            FG_RED();
         }
 
         /* Display file name */
@@ -463,7 +464,7 @@ int process_files(char *search_handle, char *search_path)
             g_file_size = (float)((g_file_data_t.nFileSizeHigh * (MAXDWORD+1))
                                     + g_file_data_t.nFileSizeLow);
             g_total_size += g_file_size;
-            GRAY();
+            FG_GRAY();
 
             if(g_file_size > 1023)  /* KB */
                 if((g_file_size /= 1024.0) > 1023)  /* MB */
@@ -478,7 +479,7 @@ int process_files(char *search_handle, char *search_path)
             //g_total_consumed += (float)((*lpFileSizeHigh * (MAXDWORD+1)) + GetCompressedFileSize(g_file_data_t.cFileName, lpFileSizeHigh));
         }
 
-        AQUA(); printf("\263 \n");  // Print |
+        FG_AQUA(); printf("\263 \n");  // Print |
     } while( FindNextFile(search_handle, &g_file_data_t) != 0 );
     /* End do */
 

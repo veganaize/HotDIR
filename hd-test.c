@@ -33,21 +33,25 @@ int test__create_horizontal_line()
 }
 
 
-//int test__get_console_info()  // Windows specific
-//{
-//    /* Arrange */
-//    CONSOLE_SCREEN_BUFFER_INFO csbi;
-//
-//    /* Act */
-//    csbi = get_console_info();
-//
-//    /* Assert */
-//    printf("%d\n", csbi.wAttributes);
-//    printf("%d\n", csbi.srWindow.Right);
-//    printf("%d\n", csbi.srWindow.Bottom - csbi.srWindow.Top);
-//
-//    return 0;
-//}
+int test__get_console_info()  // Windows specific
+{
+    /* Arrange */
+    struct console_info console = {
+            -1,          /* colors */
+            -1,          /* width */
+            -1           /* height */
+    };
+
+    /* Act */
+    get_console_info(&console);
+
+    /* Assert */
+    console.colors;
+    console.width;
+    console.height;
+
+    return 0;
+}
 
 
 //int test__create_footer()
@@ -98,7 +102,7 @@ int main()
     test__determine_size_suffix__returns_b();
     test__create_horizontal_line();
     //test__create_footer();
-    //test__get_console_info();
+    test__get_console_info();
 }
 
 
