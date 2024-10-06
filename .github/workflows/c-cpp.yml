@@ -8,19 +8,17 @@ on:
 
 jobs:
   build:
-
     runs-on: windows-2019
-
     steps:
     - uses: actions/checkout@v4
     - name: set environment
       shell: cmd 
       run: ${{ '"C:\Progra~2\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat" && cl.exe/?' }}
-      #cl.exe main.c hd.c /Fehd.exe' }}
-      #run: "C:\\Progra~2\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars32.bat"
-      #run: "dir /x c:\\progra~2"
-    - #name: build project
-      #run: cl.exe main.c hd.c /Fehd.exe
+#      cl.exe main.c hd.c /Fehd.exe' }}
+#      run: "C:\\Progra~2\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars32.bat"
+#      run: "dir /x c:\\progra~2"
+#    - name: build project
+#      run: cl.exe main.c hd.c /Fehd.exe
 #    - name: configure
 #      run: ./configure
 #    - name: make
