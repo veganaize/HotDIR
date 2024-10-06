@@ -37,3 +37,5 @@ Please make sure to update tests as appropriate.
 ## License
 
 [UNLICENSE](https://unlicense.org/) (Public Domain; No Warranty)
+
+![build status](https://github.com/veganaiZe/HotDIR/actions/workflows/c-cpp.yml/badge.svg?event=push)
