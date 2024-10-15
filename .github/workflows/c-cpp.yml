@@ -12,7 +12,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Run clang-tidy linter
-      run: clang-tidy *.c
+      run: >
+        clang-tidy
+        -checks=-fuchsia-*,-android-*,-clang-analyzer-osx*,-objc-*,-darwin-*,google-*,cppcoreguidelines-*,abseil-*,readability-*,portability-*,performance-*,modernize-*
+        *.c *.h
     - name: Build x86 project
       shell: cmd 
       run: >
