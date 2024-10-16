@@ -38,4 +38,4 @@ Please make sure to update tests as appropriate.
 
 [UNLICENSE](https://unlicense.org/) (Public Domain; No Warranty)
 
-![build status](https://github.com/veganaiZe/HotDIR/actions/workflows/c-cpp.yml/badge.svg?event=push)
+[![build status](https://github.com/veganaiZe/HotDIR/actions/workflows/c-cpp.yml/badge.svg?event=push)](https://github.com/veganaize/HotDIR/actions/workflows/c-cpp.yml)
