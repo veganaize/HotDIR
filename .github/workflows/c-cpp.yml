@@ -31,11 +31,12 @@ jobs:
 #        --version=16.7.7.0
 #        --package-parameters
 #        "--layout C:\Users\runneradmin\vs2019layout --passive --locale en-US --add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.CoreBuildTools --add Microsoft.VisualStudio.Component.VC.v142.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core"
-    - name: Utility Versions
+    - name: Download vs2019 build tools
       shell: cmd
-      run: |
-        curl -O https://download.visualstudio.microsoft.com/download/pr/2282640c-c74e-4d6a-9710-4eb8fef730e6/dfa5c24fb7aa4d11bf375bd2a46d19d3a1ff907cbc88468b0a50e3d71d53f77a/vs_BuildTools.exe
-        vs_BuildTools.exe --layout C:\Users\runneradmin\vs2019layout --quiet --locale en-US --add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.CoreBuildTools --add Microsoft.VisualStudio.Component.VC.v142.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core
+      run: curl -O https://download.visualstudio.microsoft.com/download/pr/2282640c-c74e-4d6a-9710-4eb8fef730e6/dfa5c24fb7aa4d11bf375bd2a46d19d3a1ff907cbc88468b0a50e3d71d53f77a/vs_BuildTools.exe
+    - name: Install vs2019 build tools
+      shell: cmd
+      run: vs_BuildTools.exe --layout C:\Users\runneradmin\vs2019layout --passive --locale en-US --add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.CoreBuildTools --add Microsoft.VisualStudio.Component.VC.v142.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core
 #    - name: CL version
 #      shell: cmd
 #      run: >
