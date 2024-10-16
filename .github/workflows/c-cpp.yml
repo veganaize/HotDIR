@@ -34,20 +34,8 @@ jobs:
     - name: Utility Versions
       shell: cmd
       run: |
-        echo wget
-        wget --version
-        echo node
-        node --version
-        echo java
-        java -version
-        echo javac
-        javac -version
-        echo nasm
-        nasm -v
-        echo curl
-        curl --version
-        echo clang
-        clang --version
+        echo make
+        make --version
     - name: CL version
       shell: cmd
       run: >
