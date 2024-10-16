@@ -25,8 +25,11 @@ jobs:
         --package-parameters
         "--add Microsoft.VisualStudio.Component.VC.v142.x86.x64 --passive --locale en-US"
         --version=16.7.7.0
-        && '"C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars32.bat"
-        && cl /?'
+    - name: CL version
+        shell: cmd
+        run: >
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars32.bat"
+          && cl /?
 #    - name: configure
 #      run: ./configure
 #    - name: make
