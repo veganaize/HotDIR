@@ -30,7 +30,7 @@ jobs:
       
     - name: DOWNLOAD VS2019 BUILD TOOLS INSTALLER
       shell: cmd
-      run: curl -O https://download.visualstudio.microsoft.com/download/pr/2282640c-c74e-4d6a-9710-4eb8fef730e6/dfa5c24fb7aa4d11bf375bd2a46d19d3a1ff907cbc88468b0a50e3d71d53f77a/vs_BuildTools.exe
+      run: curl --http1.0 -O https://download.visualstudio.microsoft.com/download/pr/2282640c-c74e-4d6a-9710-4eb8fef730e6/dfa5c24fb7aa4d11bf375bd2a46d19d3a1ff907cbc88468b0a50e3d71d53f77a/vs_BuildTools.exe
       
     - name: INSTALL VS2019 BUILD TOOLS 16.7.28 (XP COMPATIBLE)
       shell: cmd
