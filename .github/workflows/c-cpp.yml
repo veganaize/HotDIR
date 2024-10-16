@@ -19,7 +19,7 @@ jobs:
         "C:\Progra~2\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
         && cl /W3 main.c hd.c /Fe"hd.exe"
     - name: Chocolatey
-      run: choco list visualstudio2019buildtools --all
+      run: choco list visualstudio2019buildtools
 #    - name: configure
 #      run: ./configure
 #    - name: make
