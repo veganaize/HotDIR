@@ -23,7 +23,7 @@ jobs:
       run: >
         choco install visualstudio2019buildtools
         --package-parameters
-        "--add Microsoft.VisualStudio.Component.VC.v142.x86.x64 --passive --locale en-US"
+        "--passive --locale en-US --add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.CoreBuildTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core"
         --version=16.7.7.0
     - name: CL version
       shell: cmd
