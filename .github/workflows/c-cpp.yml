@@ -16,7 +16,7 @@ jobs:
       with:
         key: vs2019-build-tools
         path: |
-          /ProgramData/Microsoft/VisualStudio/Packages
+          C:\ProgramData\Microsoft\VisualStudio\Packages
 #    - name: Run clang-tidy linter
 #      run: clang-tidy *.c *.h
 #    - name: Build x86 project
