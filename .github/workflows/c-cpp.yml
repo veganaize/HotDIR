@@ -16,7 +16,7 @@ jobs:
       with:
         key: vs2019-build-tools
         path: |
-          c:\vs2019layout
+          ~/vs2019layout
 #    - name: Run clang-tidy linter
 #      run: clang-tidy *.c *.h
 #    - name: Build x86 project
@@ -30,7 +30,7 @@ jobs:
         choco install visualstudio2019buildtools
         --version=16.7.7.0
         --package-parameters
-        "--layout c:\vs2019layout --norestart --quiet --locale en-US --add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.CoreBuildTools --add Microsoft.VisualStudio.Component.VC.v142.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core"
+        "--layout C:\Users\runneradmin\vs2019layout --norestart --quiet --locale en-US --add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.CoreBuildTools --add Microsoft.VisualStudio.Component.VC.v142.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core"
     - name: CL version
       shell: cmd
       run: >
