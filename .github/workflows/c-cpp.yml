@@ -16,7 +16,7 @@ jobs:
       with:
         key: vs2019-build-tools
         path: |
-          ~/vs2019layout
+          /ProgramData/Microsoft/VisualStudio/Packages
 #    - name: Run clang-tidy linter
 #      run: clang-tidy *.c *.h
 #    - name: Build x86 project
@@ -36,12 +36,27 @@ jobs:
       run: curl -O https://download.visualstudio.microsoft.com/download/pr/2282640c-c74e-4d6a-9710-4eb8fef730e6/dfa5c24fb7aa4d11bf375bd2a46d19d3a1ff907cbc88468b0a50e3d71d53f77a/vs_BuildTools.exe
     - name: Install vs2019 build tools
       shell: cmd
-      run: vs_BuildTools.exe --layout C:\Users\runneradmin\vs2019layout --passive --locale en-US --add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.CoreBuildTools --add Microsoft.VisualStudio.Component.VC.v142.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core
-#    - name: CL version
-#      shell: cmd
-#      run: >
-#        "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars32.bat"
-#        && cl
+      run: >
+        vs_BuildTools.exe
+        --quiet
+        --wait
+        --norestart
+        --noUpdateInstaller
+        --add Microsoft.Component.MSBuild
+        --add Microsoft.VisualStudio.Component.Roslyn.Compiler
+        --add Microsoft.VisualStudio.Component.TextTemplating
+        --add Microsoft.VisualStudio.Component.CoreBuildTools
+        --add Microsoft.VisualStudio.Component.VC.CoreIde
+        --add Microsoft.VisualStudio.Component.VC.Redist.14.Latest
+        --add Microsoft.VisualStudio.Component.Windows10SDK.16299
+        --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core
+        --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64
+        --locale en-US
+    - name: CL version
+      shell: cmd
+      run: >
+        "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars32.bat"
+        && cl
 #    - name: configure
 #      run: ./configure
 #    - name: make
