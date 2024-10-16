@@ -34,17 +34,19 @@ jobs:
     - name: Utility Versions
       shell: cmd
       run: |
+        echo wget
         wget --version
+        echo node
         node --version
-        java --version
-        javac --version
-        cl
-        ml
-        ml64
-        gcc --version
-        g++ --version
+        echo java
+        java -version
+        echo javac
+        javac -version
+        echo nasm
         nasm -v
+        echo curl
         curl --version
+        echo clang
         clang --version
     - name: CL version
       shell: cmd
