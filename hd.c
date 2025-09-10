@@ -32,18 +32,18 @@ SHORT  g_line_count = 3;  /* Preload w/ num lines in header */
 DWORD  g_dwAttrib;
 
 /* File variables */
-char  *g_file_ext      = NULL;    /* Current file's extension */
-float g_file_size      = -1.0;    /* Current file's size */
-float g_total_size     = 0.0;     /* Total of all listed file sizes */
-float g_total_consumed = 0.0;     /* Total actual/compressed disk usage */
-int   g_file_counter   = 0;       /* Total listed file count */
+char * g_file_ext       = NULL;    /* Current file's extension */
+float  g_file_size      = -1.0;    /* Current file's size */
+float  g_total_size     = 0.0;     /* Total of all listed file sizes */
+float  g_total_consumed = 0.0;     /* Total actual/compressed disk usage */
+int    g_file_counter   = 0;       /* Total listed file count */
 
 /* Args to GetVolumeInformation() */
-TCHAR g_volume_name[MAX_PATH + 1] = { 0 };
-char  *g_root_path = "x:\\";
+TCHAR  g_volume_name[MAX_PATH + 1] = { 0 };
+char * g_root_path = "x:\\";
 
 
-int build_initial_search_string(char *search_path, char *search_string)
+int build_initial_search_string(char * search_path, char * search_string)
 {
     GetCurrentDirectory(MAX_PATH, search_string);
     strcpy(search_path, search_string);
@@ -126,7 +126,7 @@ int display_footer()
 }
 
 
-int display_header(char *search_path)
+int display_header(char * search_path)
 {
     char line[8192] = { 0 };
 
@@ -176,7 +176,7 @@ int display_help()
 }
 
 
-int fixup_path(char *search_path)
+int fixup_path(char * search_path)
 {
     /* Contents of directory (w/o trailing backslash) */
     g_dwAttrib = GetFileAttributes((LPCTSTR) search_path);
@@ -302,7 +302,7 @@ int process_cmdline_args(int argc,
 }
 
 
-int process_files(char *search_handle, char *search_path)
+int process_files(char * search_handle, char * search_path)
 {
     int i;
 

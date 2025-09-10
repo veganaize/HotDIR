@@ -2,7 +2,7 @@
 #include "hd.h"
 
 
-int main(int argc, char* argv[])
+int main(int argc, char * argv[])
 {
     char search_path[MAX_PATH] = { 0 };
     char search_string[MAX_PATH] = { 0 };
