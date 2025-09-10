@@ -56,7 +56,7 @@ void create_horizontal_line(char * string, CONSOLE_SCREEN_BUFFER_INFO csbi)
 {
     SHORT i;
     SHORT console_width = csbi.srWindow.Right + 1;
-    unsigned char horizontal_line_character[2] = { 196, 0 };
+    const char horizontal_line_character[2] = { 196, 0 };
 
     /* Draw line in string */
     for(i = 0; i < console_width; ++i) {
@@ -71,23 +71,23 @@ void create_horizontal_line(char * string, CONSOLE_SCREEN_BUFFER_INFO csbi)
 }
 
 
-void determine_size_suffix(int size_bytes, char *string, size_t string_size)
+void determine_size_suffix(int size_bytes, char * string)
 {
     if(size_bytes > 1023)  /* KB */
-        if((size_bytes /= 1024.0) > 1023)  /* MB */
-            if((size_bytes /= 1024.0) > 1023)  /* GB */
-                if((size_bytes /= 1024.0) > 1023)  /* TB */
-                    sprintf(string, "TB", size_bytes);
-                else sprintf(string, "GB", size_bytes);
-            else sprintf(string, "MB", size_bytes);
-        else sprintf(string, "KB", size_bytes);
-    else sprintf(string, "B", (int) size_bytes);
+        if((size_bytes /= 1024) > 1023)  /* MB */
+            if((size_bytes /= 1024) > 1023)  /* GB */
+                if((size_bytes /= 1024) > 1023)  /* TB */
+                    sprintf(string, "%d TB", size_bytes);
+                else sprintf(string, "%d GB", size_bytes);
+            else sprintf(string, "%d MB", size_bytes);
+        else sprintf(string, "%d KB", size_bytes);
+    else sprintf(string, "%d B", size_bytes);
 }
 
 
 int display_footer()
 {
-    unsigned char line[8192] = { 0 };
+    char line[8192] = { 0 };
 
     FG_AQUA();
     create_horizontal_line(line, g_screen_info_t);
@@ -126,10 +126,9 @@ int display_footer()
 }
 
 
-int display_header(char *search_path, SHORT console_width)
+int display_header(char *search_path)
 {
-    int i;
-    unsigned char line[8192] = { 0 };
+    char line[8192] = { 0 };
 
     FG_BRIGHT_WHITE();
     puts("\nHD");
@@ -212,8 +211,11 @@ struct console_info * get_console_info(struct console_info * p_console)
 }
 
 
-int process_cmdline_args(int argc, char *argv[],
-                         char search_drive, char *search_path, char *search_string)
+int process_cmdline_args(int argc,
+                         char *argv[],
+                         char search_drive,
+                         char *search_path,
+                         char *search_string)
 {
     /** Process command line arguments */
     while (argc-- > 1) {
@@ -258,7 +260,7 @@ int process_cmdline_args(int argc, char *argv[],
             if (strchr(argv[argc], ':') != NULL) {
 
                /* Get current drive letter */
-               search_drive = toupper(*(strchr(argv[argc], ':')-1));
+               search_drive = (char)toupper(*(strchr(argv[argc], ':')-1));
 
                /* Drop drive letter */
                argv[argc] = argv[argc]+2;
@@ -332,7 +334,7 @@ int process_files(char *search_handle, char *search_path)
             /* Convert file extension to lowercase */
             if (g_file_ext != NULL) {
                 for (i = 0; g_file_ext[i]; i++) {
-                    g_file_ext[i] = tolower(g_file_ext[i]);
+                    g_file_ext[i] = (char)tolower(g_file_ext[i]);
                 }
 
                 /* Set color based on file extension */
@@ -446,7 +448,7 @@ int process_files(char *search_handle, char *search_path)
             GetConsoleScreenBufferInfo(g_hConsole, &g_screen_info_t);
             g_dwAttrib = g_screen_info_t.wAttributes;
             FG_GRAY(); system("PAUSE");
-            SetConsoleTextAttribute(g_hConsole, g_dwAttrib); // Restore Color
+            SetConsoleTextAttribute(g_hConsole, (WORD)g_dwAttrib); // Restore Color
         }
 
         /* "DARK FG_RED" for hidden files */

@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
     WORD original_colors;
 
     get_console_info(&console);
-    original_colors = console.colors;
+    original_colors = (WORD)console.colors;
 
     build_initial_search_string(search_path, search_string);
     process_cmdline_args(argc,
@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
                          'C',  /* search_drive */
                          search_path,
                          search_string);
-    display_header(search_path, console.width);
+    display_header(search_path);
     fixup_path(search_path);
     process_files(search_handle, search_path);
 

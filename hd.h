@@ -45,9 +45,9 @@ struct console_info {
 int build_initial_search_string(char *search_path, char *search_string);
 //create_footer(char *footer_string, short console_width, char *root_path, char search_drive);
 void create_horizontal_line(char * string, CONSOLE_SCREEN_BUFFER_INFO csbi);
-void determine_size_suffix(int size_bytes, char *string, size_t string_size);
+void determine_size_suffix(int size_bytes, char *string);
 int display_footer();
-int display_header(char *search_path, SHORT console_width);
+int display_header(char *search_path);
 int display_help();
 int fixup_path(char *search_path);
 struct console_info * get_console_info();

@@ -24,7 +24,7 @@ int test__create_horizontal_line()
     /* Assert */
     console_width = csbi.srWindow.Right + 1;
     string_length = strlen(string);
-    if (string_length != console_width) {
+    if (string_length != (size_t)console_width) {
         puts("LENGTH SHOULD MATCH");
         return 1;
     }
@@ -88,7 +88,7 @@ int test__determine_size_suffix__returns_b()
     char string[16];
 
     /* Act */
-    determine_size_suffix(size, string, sizeof string);
+    determine_size_suffix(size, string);
 
     /* Assert */
     if (strcmp(string, "B") != 0) {
