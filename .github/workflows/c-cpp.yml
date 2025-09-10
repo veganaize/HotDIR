@@ -53,8 +53,7 @@ jobs:
     - name: === BUILD X86 PROJECT ===
       shell: cmd
       run: >
-        tree /a /f "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\vsdevcmd\ext\vcvars.bat"
-#        "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+        "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\vsdevcmd\ext\vcvars.bat"
         && cl /W3 main.c hd.c /Fe"hd.exe"
 #        "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars32.bat"
 #        && cl /W3 main.c hd.c /Fe"hd.exe"
