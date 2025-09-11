@@ -34,7 +34,7 @@ test__create_horizontal_line__is_console_width()
 
 
 int
-test__get_console_info__has_no_zeros()
+test__get_console_info__sets_attributes()
 {
     /* Arrange */
     struct console_info console = { -1, -1, -1 };
@@ -42,7 +42,7 @@ test__get_console_info__has_no_zeros()
     /* Act */
     get_console_info(&console);
 
-    ///* Assert */
+    /* Assert */
     if (console.colors < 0 || console.width < 1 || console.height < 0) {
         printf("RESULT: %d, %d, %d\n",
                console.colors,
@@ -110,7 +110,7 @@ main()
     failed_count += test__compact_size_with_suffix__is_bytes();
     failed_count += test__create_horizontal_line__is_console_width();
     //failed_count += test__create_footer();
-    failed_count += test__get_console_info__has_no_zeros();
+    failed_count += test__get_console_info__sets_attributes();
 
     printf("\n%d failing test%c\n", failed_count, failed_count != 1 ? 's' : '\0');
 
