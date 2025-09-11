@@ -4,28 +4,27 @@
 #include "hd.h"
 
 
-int test__create_horizontal_line()
+int
+test__create_horizontal_line()
 {
     /* Arrange */
-    char string[8192] = { 0 };
     CONSOLE_SCREEN_BUFFER_INFO csbi = {
-            80, 40,       /* COORD */
-            0, 0,         /* COORD */
-            14,           /* WORD */
-            0, 0, 79, 39  /* SMALL_RECT */
-            //100, 100      /* COORD */
+            80, 40,        /* buffer columns, rows */
+            0, 0,          /* cursor column, row */
+            14,            /* color attributes */
+            0, 0, 79, 39,  /* coords left, top, right, bottom */
+            0, 0           /* max window size */
     };
-    size_t string_length = 0;
-    SHORT console_width = 0;
+    size_t console_width = csbi.srWindow.Right + 1;
+    char line[8192] = { 0 };
+    size_t length = 0;
 
     /* Act */
-    create_horizontal_line(string, csbi);
+    length = strlen(create_horizontal_line(line, csbi));
 
     /* Assert */
-    console_width = csbi.srWindow.Right + 1;
-    string_length = strlen(string);
-    if (string_length != (size_t)console_width) {
-        puts("LENGTH SHOULD MATCH");
+    if (length != console_width) {
+        puts("LENGTH OF LINE SHOULD MATCH CONSOLE WIDTH");
         return 1;
     }
 
@@ -33,7 +32,8 @@ int test__create_horizontal_line()
 }
 
 
-int test__get_console_info()  // Windows specific
+int
+test__get_console_info()  // Windows specific
 {
     /* Arrange */
     struct console_info console = {
@@ -57,7 +57,8 @@ int test__get_console_info()  // Windows specific
 }
 
 
-//int test__create_footer()
+//int
+//test__create_footer()
 //{
 //    /* Arrange */
 //    char footer_string[640];
@@ -81,17 +82,18 @@ int test__get_console_info()  // Windows specific
 //}
 
 
-int test__determine_size_suffix__returns_b()
+int
+test__compact_size_with_suffix__returns_b()
 {
     /* Arrange */
     int size = 1023;
     char string[16];
 
     /* Act */
-    determine_size_suffix(size, string);
+    compact_size_with_suffix(size, string);
 
     /* Assert */
-    if (strcmp(string, "B") != 0) {
+    if (strcmp(string, "1023 B") != 0) {
         puts("SHOULD HAVE \"B\" SUFFIX");
         return 1;
     }
@@ -100,22 +102,11 @@ int test__determine_size_suffix__returns_b()
 }
 
 
-int main()
+int
+main()
 {
-    test__determine_size_suffix__returns_b();
+    test__compact_size_with_suffix__returns_b();
     test__create_horizontal_line();
     //test__create_footer();
     test__get_console_info();
 }
-
-
-//int test__something()
-//{
-//    /* Arrange */
-//
-//    /* Act */
-//
-//    /* Assert */
-//
-//    return 0;
-//}

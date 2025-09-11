@@ -52,36 +52,40 @@ int build_initial_search_string(char * search_path, char * search_string)
 }
 
 
-void create_horizontal_line(char * string, CONSOLE_SCREEN_BUFFER_INFO csbi)
+char *
+create_horizontal_line(char * result, CONSOLE_SCREEN_BUFFER_INFO csbi)
 {
     SHORT i;
     SHORT console_width = csbi.srWindow.Right + 1;
     const char horizontal_line_character[2] = { 196, 0 };
 
-    /* Draw line in string */
+    /* Draw line in result string */
     for(i = 0; i < console_width; ++i) {
         //if (i == console_width / 2) {
         //    strcat(string, "%c", );
         //} else {
-            strncat(string, horizontal_line_character, 1);
+            strncat(result, horizontal_line_character, 1);
         //}
     }
 
-    return;
+    return result;
 }
 
 
-void determine_size_suffix(int size_bytes, char * string)
+char *
+compact_size_with_suffix(int size_bytes, char * suffixed_size)
 {
     if(size_bytes > 1023)  /* KB */
         if((size_bytes /= 1024) > 1023)  /* MB */
             if((size_bytes /= 1024) > 1023)  /* GB */
                 if((size_bytes /= 1024) > 1023)  /* TB */
-                    sprintf(string, "%d TB", size_bytes);
-                else sprintf(string, "%d GB", size_bytes);
-            else sprintf(string, "%d MB", size_bytes);
-        else sprintf(string, "%d KB", size_bytes);
-    else sprintf(string, "%d B", size_bytes);
+                    sprintf(suffixed_size, "%d TB", size_bytes);
+                else sprintf(suffixed_size, "%d GB", size_bytes);
+            else sprintf(suffixed_size, "%d MB", size_bytes);
+        else sprintf(suffixed_size, "%d KB", size_bytes);
+    else sprintf(suffixed_size, "%d B", size_bytes);
+
+    return suffixed_size;
 }
 
 
