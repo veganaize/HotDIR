@@ -42,8 +42,12 @@ test__get_console_info__has_no_zeros()
     /* Act */
     get_console_info(&console);
 
-    /* Assert */
+    ///* Assert */
     if (console.colors < 1 || console.width < 1 || console.height < 1) {
+        printf("RESULT: %d, %d, %d\n",
+               console.colors,
+               console.width,
+               console.height);
         puts("CONSOLE ATTRIBUTES SHOULD BE SET");
         return 1;
     }
