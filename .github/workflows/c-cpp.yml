@@ -54,7 +54,7 @@ jobs:
       shell: cmd
       run: >
         "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
-        && cl /W3 main.c hd.c /Fe"hd.exe"
+        && nmake test
 #
 # https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line#developer_command_file_locations
 #
