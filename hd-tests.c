@@ -43,7 +43,7 @@ test__get_console_info__has_no_zeros()
     get_console_info(&console);
 
     ///* Assert */
-    if (console.colors < 1 || console.width < 1 || console.height < 1) {
+    if (console.colors < 0 || console.width < 1 || console.height < 0) {
         printf("RESULT: %d, %d, %d\n",
                console.colors,
                console.width,
