@@ -11,13 +11,13 @@ test : tests
 tests : hd-tests.exe
 
 hd-tests.exe : hd-tests.obj hd.obj
-	$(LINK) $(LDFLAGS) $**
+	$(LINK) $(LDFLAGS) hd-tests.obj hd.obj
 
 hd-tests.obj : hd-tests.c hd.h
 	$(CC) $(CFLAGS) -c hd-tests.c
 
 hd.exe : hd.obj main.obj
-	$(LINK) $(LDFLAGS) $**
+	$(LINK) $(LDFLAGS) hd.obj main.obj
 
 hd.obj : hd.c hd.h
 	$(CC) $(CFLAGS) -c hd.c
