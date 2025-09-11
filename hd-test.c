@@ -5,7 +5,7 @@
 
 
 int
-test__create_horizontal_line()
+test__create_horizontal_line__is_console_width()
 {
     /* Arrange */
     CONSOLE_SCREEN_BUFFER_INFO csbi = {
@@ -20,7 +20,8 @@ test__create_horizontal_line()
     size_t length = 0;
 
     /* Act */
-    length = strlen(create_horizontal_line(line, csbi));
+    create_horizontal_line(line, csbi);
+    length = strlen(line);
 
     /* Assert */
     if (length != console_width) {
@@ -33,22 +34,16 @@ test__create_horizontal_line()
 
 
 int
-test__get_console_info()  // Windows specific
+test__get_console_info__has_no_zeros()
 {
     /* Arrange */
-    struct console_info console = {
-            -1,          /* colors */
-            -1,          /* width */
-            -1           /* height */
-    };
+    struct console_info console = { -1, -1, -1 };
 
     /* Act */
     get_console_info(&console);
 
     /* Assert */
-    if (! (console.colors > 0
-            || console.width > 0
-            || console.height > 0)) {
+    if (console.colors < 1 || console.width < 1 || console.height < 1) {
         puts("CONSOLE ATTRIBUTES SHOULD BE SET");
         return 1;
     }
@@ -83,18 +78,19 @@ test__get_console_info()  // Windows specific
 
 
 int
-test__compact_size_with_suffix__returns_b()
+test__compact_size_with_suffix__is_bytes()
 {
     /* Arrange */
     int size = 1023;
-    char string[16];
+    char result[16] = { 0 };
+    const char * expected = "1023 B";
 
     /* Act */
-    compact_size_with_suffix(size, string);
+    compact_size_with_suffix(size, result);
 
     /* Assert */
-    if (strcmp(string, "1023 B") != 0) {
-        puts("SHOULD HAVE \"B\" SUFFIX");
+    if (strcmp(result, expected) != 0) {
+        printf("\nRESULT:   %s\nEXPECTED: %s\n", result, expected);
         return 1;
     }
 
@@ -105,8 +101,14 @@ test__compact_size_with_suffix__returns_b()
 int
 main()
 {
-    test__compact_size_with_suffix__returns_b();
-    test__create_horizontal_line();
-    //test__create_footer();
-    test__get_console_info();
+    int failed_count = 0;
+
+    failed_count += test__compact_size_with_suffix__is_bytes();
+    failed_count += test__create_horizontal_line__is_console_width();
+    //failed_count += test__create_footer();
+    failed_count += test__get_console_info__has_no_zeros();
+
+    printf("\n%d failing test%c\n", failed_count, failed_count != 1 ? 's' : '\0');
+
+    return failed_count;
 }

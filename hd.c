@@ -196,7 +196,8 @@ int fixup_path(char * search_path)
 }
 
 
-struct console_info * get_console_info(struct console_info * p_console)
+struct console_info *
+get_console_info(struct console_info * p_console)
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     g_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
