@@ -1,16 +1,20 @@
-CFLAGS =-WX -W4 -sdl -arch:IA32 -O2 -D_CRT_SECURE_NO_WARNINGS
-LINK = link.exe
+CC = cl.exe -nologo
+CFLAGS = -WX -W4 -sdl -arch:IA32 -O2 -D_CRT_SECURE_NO_WARNINGS
+LINK = link.exe -nologo
 LDFLAGS = -subsystem:console,"5.01"
 
-all : hd-test.exe hd.exe
+all : tests hd.exe
 
-test : hd-test.exe
+test : tests
+	hd-tests.exe
 
-hd-test.exe : hd-test.obj hd.obj
+tests : hd-tests.exe
+
+hd-tests.exe : hd-tests.obj hd.obj
 	$(LINK) $(LDFLAGS) $**
 
-hd-test.obj : hd-test.c hd.h
-	$(CC) $(CFLAGS) -c hd-test.c
+hd-tests.obj : hd-tests.c hd.h
+	$(CC) $(CFLAGS) -c hd-tests.c
 
 hd.exe : hd.obj main.obj
 	$(LINK) $(LDFLAGS) $**
@@ -22,4 +26,4 @@ main.obj : main.c hd.h
 	$(CC) $(CFLAGS) -c main.c
 
 clean :
-	del hd-test.obj hd-test.exe hd.obj hd.exe main.obj
+	del hd-tests.obj hd-tests.exe hd.obj hd.exe main.obj
