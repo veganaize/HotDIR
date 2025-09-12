@@ -26,4 +26,4 @@ main.obj : main.c hd.h
 	$(CC) $(CFLAGS) -c main.c
 
 clean :
-	del hd-tests.obj hd-tests.exe hd.obj hd.exe main.obj
+	del hd-tests.obj hd-tests.exe hd.obj hd.exe main.obj 2>NUL
