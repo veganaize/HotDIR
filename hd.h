@@ -1,8 +1,6 @@
 #ifndef HD_H
 #define HD_H
 
-#include <windows.h>
-
 #define BLACK 0
 #define BLUE 1
 #define GREEN 2
