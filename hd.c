@@ -75,11 +75,11 @@ create_horizontal_line(char * result, CONSOLE_SCREEN_BUFFER_INFO csbi)
 char *
 compact_size_with_suffix(long long size_bytes, char * suffixed_size)
 {
-    if(size_bytes > 1023LL)  /* KB */
-        if((size_bytes /= 1024LL) > 1023LL)  /* MB */
-            if((size_bytes /= 1024LL) > 1023LL)  /* GB */
-                if((size_bytes /= 1024LL) > 1023LL)  /* TB */
-                    sprintf(suffixed_size, "%lld TB", size_bytes);
+    if(size_bytes >= 1024LL)  /* KB */
+        if((size_bytes /= 1024LL) >= 1024LL)  /* MB */
+            if((size_bytes /= 1024LL) >= 1024LL)  /* GB */
+                if((size_bytes /= 1024LL) >= 1024LL)  /* TB */
+                    sprintf(suffixed_size, "%lld TB", size_bytes/1024LL);
                 else sprintf(suffixed_size, "%lld GB", size_bytes);
             else sprintf(suffixed_size, "%lld MB", size_bytes);
         else sprintf(suffixed_size, "%lld KB", size_bytes);

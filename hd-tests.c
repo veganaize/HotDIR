@@ -106,9 +106,9 @@ int
 test__compact_size_with_suffix__is_kilobytes()
 {
     /* Arrange */
-    int size = 65536;
+    int size = 1048575;
     char result[16] = { 0 };
-    const char * expected = "64 KB";
+    const char * expected = "1023 KB";
 
     /* Act */
     compact_size_with_suffix(size, result);
@@ -207,25 +207,46 @@ test__compact_size_with_suffix__is_not_gigabytes()
 }
 
 
-//int
-//test__compact_size_with_suffix__works_with_ntfs_volume_limit()
-//{
-//    /* Arrange */
-//    long long size = 281474976710656;
-//    char result[16] = { 0 };
-//    const char * expected = "1023 MB";
-//
-//    /* Act */
-//    compact_size_with_suffix(size, result);
-//
-//    /* Assert */
-//    if (strcmp(result, expected) != 0) {
-//        printf("\nRESULT:   %s\nEXPECTED: %s\n", result, expected);
-//        return 1;
-//    }
-//
-//    return 0;
-//}
+int
+test__compact_size_with_suffix__is_terabytes()
+{
+    /* Arrange */
+    long long size = 1099511627776;
+    char result[16] = { 0 };
+    const char * expected = "1 TB";
+
+    /* Act */
+    compact_size_with_suffix(size, result);
+
+    /* Assert */
+    if (strcmp(result, expected) != 0) {
+        printf("\nRESULT:   %s\nEXPECTED: %s\n", result, expected);
+        return 1;
+    }
+
+    return 0;
+}
+
+
+int
+test__compact_size_with_suffix__works_with_ntfs_volume_limit()
+{
+    /* Arrange */
+    long long size = 281474976710656;
+    char result[16] = { 0 };
+    const char * expected = "256 TB";
+
+    /* Act */
+    compact_size_with_suffix(size, result);
+
+    /* Assert */
+    if (strcmp(result, expected) != 0) {
+        printf("\nRESULT:   %s\nEXPECTED: %s\n", result, expected);
+        return 1;
+    }
+
+    return 0;
+}
 
 
 int
@@ -239,7 +260,8 @@ main()
     failed_count += test__compact_size_with_suffix__is_not_megabytes();
     failed_count += test__compact_size_with_suffix__is_gigabytes();
     failed_count += test__compact_size_with_suffix__is_not_gigabytes();
-    //failed_count += test__compact_size_with_suffix__works_with_ntfs_volume_limit();
+    failed_count += test__compact_size_with_suffix__is_terabytes();
+    failed_count += test__compact_size_with_suffix__works_with_ntfs_volume_limit();
     failed_count += test__create_horizontal_line__is_console_width();
     //failed_count += test__create_footer();
     failed_count += test__get_console_info__sets_attributes();
