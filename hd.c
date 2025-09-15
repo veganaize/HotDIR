@@ -308,24 +308,25 @@ int process_cmdline_args(int argc,
 }
 
 
-int process_files(char * search_handle, char * search_path)
+int process_files(HANDLE search_handle, char * search_path)
 {
     int i;
 
     /** Attempt to retrieve first file */
-    if ((search_handle = FindFirstFile((LPCTSTR)search_path, &g_file_data_t))
-            == INVALID_HANDLE_VALUE) {
+    search_handle = FindFirstFile((LPCTSTR) search_path, &g_file_data_t);
+    if (search_handle == INVALID_HANDLE_VALUE) {
         puts("\nNo file or folder found.");
 
         restore_console();
         return -1;
 
-    } else if((long)search_handle == ERROR_FILE_NOT_FOUND) {
-        puts("\nNo file or folder found.");
-
-        restore_console();
-        return -1;
     }
+//    else if (search_handle == ERROR_FILE_NOT_FOUND) {
+//        puts("\nNo file or folder found.");
+//
+//        restore_console();
+//        return -1;
+//    }
 
     do {
         /* File is directory ? */
