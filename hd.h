@@ -1,7 +1,9 @@
 #ifndef HD_H
 #define HD_H
 
-#define ARRAYSIZE(a) (sizeof(a) / sizeof(*(a)))
+#ifndef ARRAYSIZE
+    #define ARRAYSIZE(a) (sizeof(a) / sizeof(*(a)))
+#endif
 
 #define BLACK 0
 #define BLUE 1

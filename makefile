@@ -32,4 +32,4 @@ main.obj : main.c hd.h
 
 clean :
 	del hd-tests.obj hd-tests.exe hd.obj hd.exe main.obj \
-	2>/dev/null || rm -f hd-tests.obj hd-tests.exe hd.obj hd.exe main.obj
+	|| rm -f hd-tests.obj hd-tests.exe hd.obj hd.exe main.obj
