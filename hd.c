@@ -5,6 +5,7 @@
  * NO WARRANTY WHATSOEVER!
  *
  */
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>
@@ -33,9 +34,9 @@ DWORD  g_dwAttrib;
 
 /* File variables */
 char * g_file_ext       = NULL;    /* Current file's extension */
-float  g_file_size      = -1.0;    /* Current file's size */
-float  g_total_size     = 0.0;     /* Total of all listed file sizes */
-float  g_total_consumed = 0.0;     /* Total actual/compressed disk usage */
+double  g_file_size      = -1.0;    /* Current file's size */
+double  g_total_size     = 0.0;     /* Total of all listed file sizes */
+double  g_total_consumed = 0.0;     /* Total actual/compressed disk usage */
 int    g_file_counter   = 0;       /* Total listed file count */
 
 /* Args to GetVolumeInformation() */
@@ -57,14 +58,14 @@ create_horizontal_line(char * result, CONSOLE_SCREEN_BUFFER_INFO csbi)
 {
     SHORT i;
     SHORT console_width = csbi.srWindow.Right + 1;
-    const char horizontal_line_character[2] = { 196, 0 };
+    const char horizontal_line_character[2] = { (char)196, 0 };
 
     /* Draw line in result string */
     for(i = 0; i < console_width; ++i) {
         //if (i == console_width / 2) {
         //    strcat(string, "%c", );
         //} else {
-            strncat(result, horizontal_line_character, 1);
+            strncat(result, horizontal_line_character, 2);
         //}
     }
 
@@ -471,7 +472,7 @@ int process_files(char * search_handle, char * search_path)
 
         /* Otherwise display file size */
         } else {
-            g_file_size = (float)((g_file_data_t.nFileSizeHigh * (MAXDWORD+1))
+            g_file_size = (double)((g_file_data_t.nFileSizeHigh * (MAXDWORD+1))
                                     + g_file_data_t.nFileSizeLow);
             g_total_size += g_file_size;
             FG_GRAY();

@@ -1,6 +1,6 @@
 CL = cl.exe -nologo -WX -W4 -sdl -arch:IA32 -O2 -D_CRT_SECURE_NO_WARNINGS
 LINK = link.exe -nologo -subsystem:console,"5.01"
-GCC = gcc -std=c99 -O2 -fdiagnostics-color -mconsole
+GCC = gcc -std=c99 -O2 -fdiagnostics-color -mconsole -Wall -Wextra -pedantic-errors -Wfatal-errors -Wshadow -Wconversion -Wsign-conversion -Wno-missing-braces
 LD = gcc -mconsole
 
 all : tests hd.exe
@@ -31,5 +31,5 @@ main.obj : main.c hd.h
 	2>/dev/null || $(GCC) $(CFLAGS) -c main.c -o main.obj
 
 clean :
-	del hd-tests.obj hd-tests.exe hd.obj hd.exe main.obj 2>NUL \
+	del hd-tests.obj hd-tests.exe hd.obj hd.exe main.obj \
 	2>/dev/null || rm -f hd-tests.obj hd-tests.exe hd.obj hd.exe main.obj

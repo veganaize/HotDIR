@@ -15,7 +15,7 @@ test__create_horizontal_line__is_console_width()
             0, 0, 79, 39,  /* coords left, top, right, bottom */
             0, 0           /* max window size */
     };
-    size_t console_width = csbi.srWindow.Right + 1;
+    size_t console_width = (size_t) csbi.srWindow.Right + 1;
     char line[8192] = { 0 };
     size_t length = 0;
 
