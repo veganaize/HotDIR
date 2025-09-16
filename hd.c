@@ -65,7 +65,7 @@ create_horizontal_line(char * result, CONSOLE_SCREEN_BUFFER_INFO csbi)
         //if (i == console_width / 2) {
         //    strcat(string, "%c", );
         //} else {
-            strncat(result, &horizontal_line_character, 2);
+            strncat(result, &horizontal_line_character, 1);
         //}
     }
 
