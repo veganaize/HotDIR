@@ -22,7 +22,6 @@ test__create_horizontal_line__is_console_width()
     /* Act */
     create_horizontal_line(line, csbi);
     length = strlen(line);
-    printf("length: %u\n", length);
 
     /* Assert */
     if (length != console_width) {
