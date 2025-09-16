@@ -58,14 +58,14 @@ create_horizontal_line(char * result, CONSOLE_SCREEN_BUFFER_INFO csbi)
 {
     SHORT i;
     SHORT console_width = csbi.srWindow.Right + 1;
-    const char horizontal_line_character = (char)196;
+    const char horizontal_line_character[] = { (char)196, '\0' };
 
     /* Draw line in result string */
     for(i = 0; i < console_width; ++i) {
         //if (i == console_width / 2) {
         //    strcat(string, "%c", );
         //} else {
-            strncat(result, &horizontal_line_character, 1);
+            strncat(result, horizontal_line_character, 2);
         //}
     }
 

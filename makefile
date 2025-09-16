@@ -2,7 +2,7 @@ CL = cl.exe -nologo -J -WX -W4 -sdl -arch:IA32 -O2 -D_CRT_SECURE_NO_WARNINGS
 LINK = link.exe -nologo -subsystem:console,"5.01"
 
 GCC = gcc
-CFLAGS = -std=c99 -O2 -fdiagnostics-color -mconsole -Wall -Wextra -pedantic-errors -Wfatal-errors -Wshadow -Wconversion -Wsign-conversion -Wno-missing-braces
+CFLAGS = -std=c99 -funsigned-char -O2 -fdiagnostics-color -Wall -Wextra -pedantic-errors -Wfatal-errors -Wshadow -Wconversion -Wsign-conversion -Wno-missing-braces
 LDFLAGS = -mconsole
 
 
